@@ -4,6 +4,7 @@ import React from "react";
 import { TicketSummary, ContextLinks } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { SlaBadge } from "@/components/SlaBadge";
+import { ContextSkeleton } from "@/components/Skeletons";
 import {
   Link2,
   Building,
@@ -43,9 +44,7 @@ export const ContextLinkagePane: React.FC<ContextLinkagePaneProps> = ({
       </div>
 
       {loading ? (
-        <div className="p-4 text-center text-xs text-slate-400 animate-pulse">
-          Correlating booking hash & agency context...
-        </div>
+        <ContextSkeleton />
       ) : (
         <div className="space-y-5">
           {/* Section 1: Same Booking Hash (TBOH) */}

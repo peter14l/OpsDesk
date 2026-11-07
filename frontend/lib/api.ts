@@ -189,6 +189,22 @@ export const api = {
     });
   },
 
+  // Real-Time Events & Simulation
+  async simulateInboundTicket(urgency: "critical" | "moderate" | "standard" = "critical") {
+    return fetchJson(`/events/simulate-inbound?urgency=${urgency}`, {
+      method: "POST",
+    });
+  },
+
+  async pollEvents(since?: string) {
+    const q = since ? `?since=${encodeURIComponent(since)}` : "";
+    return fetchJson<{ timestamp: string; events: any[] }>(`/events/poll${q}`);
+  },
+
+  getEventStreamUrl() {
+    return `${API_BASE}/events/stream`;
+  },
+
   // Insights
   async getInsightsClusters(): Promise<InsightsDashboard> {
     return fetchJson("/insights/clusters");
@@ -204,10 +220,11 @@ export const api = {
   },
 
   // Export URLs
-  getExportUrl(format: "csv" | "json", status?: string, region?: string) {
+  getExportUrl(format: "csv" | "json", status?: string, region?: string, simulateVolume?: number) {
     const params = new URLSearchParams({ format });
     if (status && status !== "ALL") params.append("status", status);
     if (region && region !== "ALL") params.append("region", region);
+    if (simulateVolume) params.append("simulate_volume", String(simulateVolume));
     return `${API_BASE}/export/tickets?${params.toString()}`;
   },
 };

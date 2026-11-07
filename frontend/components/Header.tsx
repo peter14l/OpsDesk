@@ -69,6 +69,9 @@ interface HeaderProps {
     atRisk: number;
     escalated: number;
   };
+  isLiveSync?: boolean;
+  onSimulateInbound?: () => void;
+  simulating?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -77,6 +80,9 @@ export const Header: React.FC<HeaderProps> = ({
   activeTab,
   onTabChange,
   stats,
+  isLiveSync = true,
+  onSimulateInbound,
+  simulating = false,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 px-4 py-2.5 shadow-sm flex items-center justify-between">
@@ -127,7 +133,28 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Controls: Live Stats, New Ticket, & Role Switcher */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {/* Real-time SSE / Polling Status Pill */}
+        <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 border border-slate-200 rounded-full text-[11px] font-mono">
+          <span className={`w-2 h-2 rounded-full ${isLiveSync ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`}></span>
+          <span className="font-semibold text-slate-700 hidden sm:inline">
+            {isLiveSync ? "Live Sync Active" : "Polling Mode"}
+          </span>
+        </div>
+
+        {/* Live Simulation Trigger (Hackathon Demo Feature) */}
+        {onSimulateInbound && (
+          <button
+            onClick={onSimulateInbound}
+            disabled={simulating}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg shadow-xs transition-all disabled:opacity-50"
+            title="Inject simulated emergency hotel check-in walk to test live WebSocket/SSE queue updates"
+          >
+            <span>⚡</span>
+            <span className="hidden md:inline">{simulating ? "Injecting..." : "Simulate Live Inbound"}</span>
+          </button>
+        )}
+
         {/* Live Triage Counters */}
         {stats && (
           <div className="hidden lg:flex items-center gap-3 text-xs font-medium border-r border-slate-200 pr-4">

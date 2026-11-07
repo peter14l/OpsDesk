@@ -40,8 +40,8 @@ export const Navigation: React.FC<NavigationProps> = ({
   onCategoryChange,
   counts,
 }) => {
-  const handleExport = (format: "csv" | "json") => {
-    const url = api.getExportUrl(format, currentFilter, selectedRegion);
+  const handleExport = (format: "csv" | "json", simulate50k = false) => {
+    const url = api.getExportUrl(format, currentFilter, selectedRegion, simulate50k ? 50000 : undefined);
     window.open(url, "_blank");
   };
 
@@ -169,7 +169,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           <p className="text-[10px] text-slate-500 mb-2 leading-relaxed">
             RFC-4180 compliant raw data stream for operations audits and BI ingest.
           </p>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 gap-1.5 mb-2">
             <button
               onClick={() => handleExport("csv")}
               className="bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-mono text-[11px] font-bold py-1 px-2 rounded text-center shadow-xs transition-colors"
@@ -183,6 +183,13 @@ export const Navigation: React.FC<NavigationProps> = ({
               JSON Stream
             </button>
           </div>
+          <button
+            onClick={() => handleExport("csv", true)}
+            className="w-full bg-slate-200/80 hover:bg-slate-300 text-slate-800 font-mono text-[10px] font-bold py-1 px-2 rounded text-center transition-colors"
+            title="Demonstrate chunked streaming of 50,000 synthetic operations rows with O(1) memory"
+          >
+            🚀 50k Row Benchmark Stream
+          </button>
         </div>
       </div>
     </aside>

@@ -20,7 +20,12 @@ The UI architecture adheres to:
    - Actionable recommendations with direct deep-linking to sample tickets.
 3. **Data Stream Export**:
    - One-click streaming CSV and JSON exports for enterprise reporting and data warehouses.
-4. **Interactive Persona Switcher**:
+   - Benchmark streaming endpoint testing up to 50,000+ records with O(1) constant memory.
+4. **Real-Time Responsiveness & Fallbacks**:
+   - Server-Sent Events (SSE) event bus broadcasting state changes to all connected desks.
+   - Adaptive 4s delta polling fallback if SSE is disconnected by enterprise proxies.
+   - Component-level Error Boundaries and loading skeletons on all views.
+5. **Interactive Persona Switcher**:
    - Seamless switching between:
      - **Agent** (Sarah Jenkins / Rajesh Sharma)
      - **Escalation Manager** (Priya Nair)

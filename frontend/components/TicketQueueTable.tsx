@@ -4,6 +4,8 @@ import React from "react";
 import { TicketSummary } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { SlaBadge } from "@/components/SlaBadge";
+import { TableSkeleton } from "@/components/Skeletons";
+import { EmptyState } from "@/components/EmptyState";
 import {
   Clock,
   Search,
@@ -22,6 +24,8 @@ interface TicketQueueTableProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   loading: boolean;
+  currentFilter?: string;
+  onResetFilters?: () => void;
 }
 
 export const TicketQueueTable: React.FC<TicketQueueTableProps> = ({
@@ -105,14 +109,28 @@ export const TicketQueueTable: React.FC<TicketQueueTableProps> = ({
       {/* Dense Table View */}
       <div className="flex-1 overflow-y-auto">
         {loading ? (
-          <div className="p-8 text-center text-xs text-slate-400 animate-pulse">
-            Loading operational triage queue...
+          <div className="p-2">
+            <TableSkeleton rows={7} />
           </div>
         ) : tickets.length === 0 ? (
-          <div className="p-8 text-center space-y-2">
-            <AlertCircle className="w-8 h-8 text-slate-300 mx-auto" />
-            <p className="text-xs text-slate-500 font-medium">No tickets match the selected criteria.</p>
-          </div>
+          <EmptyState
+            type={
+              searchQuery
+                ? "search"
+                : currentFilter === "ESCALATED"
+                ? "escalated"
+                : currentFilter === "SLA_RISK"
+                ? "at_risk"
+                : currentFilter === "PENDING_SUPPLIER"
+                ? "side_convo"
+                : "queue"
+            }
+            query={searchQuery}
+            onResetFilters={() => {
+              if (searchQuery) onSearchChange("");
+              else if (onResetFilters) onResetFilters();
+            }}
+          />
         ) : (
           <table className="w-full text-left border-collapse text-xs">
             <thead className="sticky top-0 bg-slate-100/90 backdrop-blur-xs border-b border-slate-200 z-10 text-[11px] font-bold text-slate-600 uppercase tracking-wider">

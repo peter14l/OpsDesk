@@ -9,6 +9,7 @@ from app.routers import (
     insights_router,
     export_router,
     users_router,
+    events_router,
 )
 
 # Auto-create all tables in SQLite
@@ -38,6 +39,7 @@ app.include_router(routing_router, prefix=settings.API_V1_PREFIX)
 app.include_router(insights_router, prefix=settings.API_V1_PREFIX)
 app.include_router(export_router, prefix=settings.API_V1_PREFIX)
 app.include_router(users_router, prefix=settings.API_V1_PREFIX)
+app.include_router(events_router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/health")

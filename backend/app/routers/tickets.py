@@ -24,6 +24,7 @@ from app.schemas.ticket import (
 from app.services.routing_engine import evaluate_ticket_routing
 from app.services.sla_service import calculate_travel_aware_sla
 from app.services.linkage_service import get_ticket_context_links
+from app.routers.events import event_broadcaster
 
 router = APIRouter(prefix="/tickets", tags=["Tickets"])
 
@@ -122,7 +123,7 @@ def list_tickets(
 
 
 @router.post("", response_model=dict)
-def create_ticket(payload: TicketCreate, db: Session = Depends(get_db)):
+async def create_ticket(payload: TicketCreate, db: Session = Depends(get_db)):
     agency = db.query(Agency).filter(Agency.id == payload.agency_id).first()
     if not agency:
         raise HTTPException(status_code=404, detail="Agency not found")
@@ -198,8 +199,11 @@ def create_ticket(payload: TicketCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(ticket)
 
+    summary_data = serialize_summary(ticket)
+    await event_broadcaster.broadcast("TICKET_CREATED", summary_data)
+
     return {
-        "ticket": serialize_summary(ticket),
+        "ticket": summary_data,
         "routed_to": {
             "id": assigned_agent.id if assigned_agent else None,
             "name": assigned_agent.full_name if assigned_agent else "Unassigned Queue",
@@ -236,7 +240,7 @@ def get_ticket(ticket_id: str, db: Session = Depends(get_db)):
 
 
 @router.patch("/{ticket_id}", response_model=dict)
-def update_ticket(ticket_id: str, payload: TicketUpdate, db: Session = Depends(get_db)):
+async def update_ticket(ticket_id: str, payload: TicketUpdate, db: Session = Depends(get_db)):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
@@ -265,11 +269,13 @@ def update_ticket(ticket_id: str, payload: TicketUpdate, db: Session = Depends(g
     ticket.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(ticket)
-    return serialize_summary(ticket)
+    summary_data = serialize_summary(ticket)
+    await event_broadcaster.broadcast("TICKET_UPDATED", summary_data)
+    return summary_data
 
 
 @router.post("/{ticket_id}/messages", response_model=TicketMessageOut)
-def add_ticket_message(ticket_id: str, payload: TicketMessageCreate, db: Session = Depends(get_db)):
+async def add_ticket_message(ticket_id: str, payload: TicketMessageCreate, db: Session = Depends(get_db)):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
@@ -299,6 +305,14 @@ def add_ticket_message(ticket_id: str, payload: TicketMessageCreate, db: Session
     ticket.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(msg)
+
+    await event_broadcaster.broadcast("MESSAGE_ADDED", {
+        "ticket_id": ticket.id,
+        "message_id": msg.id,
+        "sender_role": msg.sender_role,
+        "message_type": msg.message_type,
+    })
+
     return msg
 
 
@@ -308,7 +322,7 @@ def get_context_links(ticket_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/{ticket_id}/escalate", response_model=dict)
-def escalate_ticket(ticket_id: str, payload: TicketEscalateRequest, db: Session = Depends(get_db)):
+async def escalate_ticket(ticket_id: str, payload: TicketEscalateRequest, db: Session = Depends(get_db)):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
@@ -352,16 +366,23 @@ def escalate_ticket(ticket_id: str, payload: TicketEscalateRequest, db: Session 
     db.commit()
     db.refresh(ticket)
 
+    summary_data = serialize_summary(ticket)
+    await event_broadcaster.broadcast("TICKET_ESCALATED", {
+        "ticket": summary_data,
+        "escalated_to": mgr.full_name if mgr else "Escalation Pool",
+        "reason": reason_full,
+    })
+
     return {
         "status": "success",
-        "ticket": serialize_summary(ticket),
+        "ticket": summary_data,
         "escalated_to": mgr.full_name if mgr else "Escalation Pool",
         "audit_id": audit.id,
     }
 
 
 @router.post("/{ticket_id}/transfer", response_model=dict)
-def transfer_ticket(ticket_id: str, payload: TicketTransferRequest, db: Session = Depends(get_db)):
+async def transfer_ticket(ticket_id: str, payload: TicketTransferRequest, db: Session = Depends(get_db)):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
@@ -393,9 +414,16 @@ def transfer_ticket(ticket_id: str, payload: TicketTransferRequest, db: Session 
     db.commit()
     db.refresh(ticket)
 
+    summary_data = serialize_summary(ticket)
+    await event_broadcaster.broadcast("TICKET_TRANSFERRED", {
+        "ticket": summary_data,
+        "transferred_to": target_agent.full_name,
+        "reason": payload.reason,
+    })
+
     return {
         "status": "success",
-        "ticket": serialize_summary(ticket),
+        "ticket": summary_data,
         "transferred_to": target_agent.full_name,
         "note": "Side-conversations and explicit recipient arrays preserved intact.",
     }

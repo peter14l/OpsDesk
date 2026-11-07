@@ -13,6 +13,7 @@ from app.schemas.side_convo import (
     SideConversationMessageCreate,
     SideConversationMessageOut,
 )
+from app.routers.events import event_broadcaster
 
 router = APIRouter(tags=["Side Conversations"])
 
@@ -33,7 +34,7 @@ def list_side_conversations(ticket_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/tickets/{ticket_id}/side-conversations", response_model=SideConversationOut)
-def create_side_conversation(
+async def create_side_conversation(
     ticket_id: str,
     payload: SideConversationCreate,
     db: Session = Depends(get_db),
@@ -92,11 +93,18 @@ def create_side_conversation(
     db.commit()
     db.refresh(side_convo)
 
+    await event_broadcaster.broadcast("SIDE_CONVO_UPDATED", {
+        "ticket_id": ticket.id,
+        "side_conversation_id": side_convo.id,
+        "supplier_name": side_convo.supplier_name,
+        "status": side_convo.status,
+    })
+
     return side_convo
 
 
 @router.post("/side-conversations/{side_convo_id}/messages", response_model=SideConversationMessageOut)
-def add_side_conversation_message(
+async def add_side_conversation_message(
     side_convo_id: str,
     payload: SideConversationMessageCreate,
     db: Session = Depends(get_db),
@@ -138,4 +146,11 @@ def add_side_conversation_message(
 
     db.commit()
     db.refresh(msg)
+
+    await event_broadcaster.broadcast("SIDE_CONVO_UPDATED", {
+        "ticket_id": side_convo.ticket_id,
+        "side_conversation_id": side_convo.id,
+        "is_supplier_incoming": payload.is_supplier_incoming,
+    })
+
     return msg

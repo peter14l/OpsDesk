@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Header, PRESET_USERS, CurrentUserSession } from "@/components/Header";
 import { InsightsDashboard, ThemeCluster } from "@/lib/types";
 import { api } from "@/lib/api";
+import { InsightsSkeleton } from "@/components/Skeletons";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import {
   BarChart3,
   TrendingUp,
@@ -95,12 +97,11 @@ export default function InsightsPage() {
         </div>
 
         {loading ? (
-          <div className="p-16 text-center text-xs text-slate-400 animate-pulse">
-            Aggregating incident clusters and supplier failure metrics...
-          </div>
+          <InsightsSkeleton />
         ) : !data ? (
-          <div className="p-8 text-center text-xs text-rose-500">
-            Failed to load Ops Insights data.
+          <div className="p-12 text-center bg-white rounded-xl border border-rose-200 text-xs text-rose-600 space-y-2">
+            <p className="font-bold">Failed to load Ops Insights clusters.</p>
+            <p className="text-slate-500">Ensure the backend API is reachable at http://localhost:8000.</p>
           </div>
         ) : (
           <>
