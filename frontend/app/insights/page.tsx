@@ -105,6 +105,33 @@ export default function InsightsPage() {
           </div>
         ) : (
           <>
+            {/* Executive AI Briefing Banner */}
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-xl p-5 border border-indigo-800/50 shadow-md">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-indigo-800/40">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-indigo-500/20 border border-indigo-400/30 rounded-lg text-indigo-300">
+                    <Sparkles className="w-4 h-4 text-indigo-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-300">
+                      Executive Operations Briefing & Root Cause Synthesis
+                    </h2>
+                    <span className="text-[11px] text-slate-400">
+                      Weekly Automated Defect Clustering • Real-time TBO Network Ingestion
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono bg-indigo-950/80 text-indigo-200 border border-indigo-700/50 px-2.5 py-1 rounded-md">
+                    Analyzed Volume: <strong>{data.total_weekly_tickets} tickets</strong>
+                  </span>
+                </div>
+              </div>
+              <p className="mt-3 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                {data.executive_weekly_briefing}
+              </p>
+            </div>
+
             {/* Top Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
@@ -174,8 +201,8 @@ export default function InsightsPage() {
                       className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-3"
                     >
                       <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
                             <span
                               className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${getCategoryColor(
                                 cluster.category
@@ -184,6 +211,9 @@ export default function InsightsPage() {
                               {cluster.category}
                             </span>
                             <span className="text-xs font-mono text-slate-400">#{cluster.tag}</span>
+                            <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold font-mono px-2 py-0.5 rounded-full">
+                              {cluster.share_percentage}% of Volume
+                            </span>
                           </div>
                           <h3 className="text-sm font-bold text-slate-900">{cluster.label}</h3>
                         </div>
@@ -193,8 +223,16 @@ export default function InsightsPage() {
                             <span className="text-base font-extrabold font-mono text-slate-900 block">
                               {cluster.ticket_count}
                             </span>
-                            <span className="text-[10px] text-slate-400 uppercase font-medium">Incidents</span>
+                            <span className="text-[10px] text-slate-400 uppercase font-medium">Tickets</span>
                           </div>
+
+                          <div className="bg-amber-50 border border-amber-200 px-2 py-1 rounded-md text-right">
+                            <span className="text-xs font-bold font-mono text-amber-800 block">
+                              ${cluster.estimated_dispute_value.toLocaleString()}
+                            </span>
+                            <span className="text-[9px] text-amber-600 uppercase font-semibold">Exposure</span>
+                          </div>
+
                           {cluster.sla_breached_count > 0 && (
                             <div className="bg-rose-50 border border-rose-200 px-2 py-1 rounded-md">
                               <span className="text-xs font-bold font-mono text-rose-700 block">
@@ -204,6 +242,19 @@ export default function InsightsPage() {
                             </div>
                           )}
                         </div>
+                      </div>
+
+                      {/* Share of Volume Visual Progress Bar */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className="bg-indigo-600 h-1.5 rounded-full"
+                            style={{ width: `${Math.min(cluster.share_percentage, 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] font-mono font-semibold text-slate-500">
+                          {cluster.share_percentage}%
+                        </span>
                       </div>
 
                       {/* Root Cause & Recommendation */}
@@ -221,29 +272,38 @@ export default function InsightsPage() {
                       </div>
 
                       {/* Affected Agencies & Sample Linked Tickets */}
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs">
                         <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
                           <span className="font-semibold text-slate-700">Affected Partners:</span>
-                          {cluster.top_agencies.map((ag) => (
-                            <span key={ag} className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-medium">
-                              {ag}
-                            </span>
-                          ))}
+                          {cluster.top_agencies.length > 0 ? (
+                            cluster.top_agencies.map((ag) => (
+                              <span key={ag} className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-medium">
+                                {ag}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-slate-400">Network-wide</span>
+                          )}
                         </div>
 
                         {/* Direct Deep-Links to Sample Tickets */}
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-semibold text-slate-600">Sample Cases:</span>
-                          {cluster.sample_tickets?.slice(0, 2).map((st) => (
-                            <button
-                              key={st.id}
-                              onClick={() => router.push(`/?ticket=${st.id}`)}
-                              className="text-[11px] font-mono font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-2 py-0.5 rounded flex items-center gap-1 transition-colors"
-                            >
-                              <span>{st.ticket_number}</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </button>
-                          ))}
+                          <span className="text-[11px] font-semibold text-slate-600">Sample Tickets:</span>
+                          {cluster.sample_tickets && cluster.sample_tickets.length > 0 ? (
+                            cluster.sample_tickets.slice(0, 3).map((st) => (
+                              <button
+                                key={st.id}
+                                onClick={() => router.push(`/?ticket=${st.id}`)}
+                                title={`${st.subject} (${st.status})`}
+                                className="text-[11px] font-mono font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-2 py-0.5 rounded flex items-center gap-1 transition-colors"
+                              >
+                                <span>{st.ticket_number}</span>
+                                <ExternalLink className="w-2.5 h-2.5" />
+                              </button>
+                            ))
+                          ) : (
+                            <span className="text-slate-400 text-[10px]">No active sample tickets</span>
+                          )}
                         </div>
                       </div>
                     </div>

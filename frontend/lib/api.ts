@@ -189,9 +189,24 @@ export const api = {
     });
   },
 
+  // Dynamic Intent Auto-Suggest
+  async classifyIntent(text: string): Promise<{
+    predicted_category: string;
+    label: string;
+    confidence: number;
+    suggested_priority: string;
+    matched_keywords: string[];
+    suggested_tag: string;
+  }> {
+    return fetchJson("/tickets/classify-intent", {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    });
+  },
+
   // Real-Time Events & Simulation
-  async simulateInboundTicket(urgency: "critical" | "moderate" | "standard" = "critical") {
-    return fetchJson(`/events/simulate-inbound?urgency=${urgency}`, {
+  async simulateInboundTicket(urgency: "critical" | "moderate" | "standard" = "critical"): Promise<any> {
+    return fetchJson<any>(`/events/simulate-inbound?urgency=${urgency}`, {
       method: "POST",
     });
   },

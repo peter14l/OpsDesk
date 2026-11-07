@@ -21,9 +21,15 @@ from app.schemas.ticket import (
     TicketMessageCreate,
     TicketMessageOut,
 )
+from pydantic import BaseModel
+
+
+class IntentClassifyRequest(BaseModel):
+    text: str
 from app.services.routing_engine import evaluate_ticket_routing
 from app.services.sla_service import calculate_travel_aware_sla
 from app.services.linkage_service import get_ticket_context_links
+from app.services.intent_classifier import classify_travel_intent
 from app.routers.events import event_broadcaster
 
 router = APIRouter(prefix="/tickets", tags=["Tickets"])
@@ -55,6 +61,11 @@ def serialize_summary(t: Ticket) -> dict:
         "created_at": t.created_at,
         "updated_at": t.updated_at,
     }
+
+
+@router.post("/classify-intent")
+def classify_intent(payload: IntentClassifyRequest):
+    return classify_travel_intent(payload.text)
 
 
 @router.get("", response_model=TicketListResponse)

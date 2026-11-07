@@ -7,8 +7,10 @@ class ThemeCluster(BaseModel):
     label: str
     category: str
     ticket_count: int
+    share_percentage: float = 0.0
     sla_breached_count: int
     escalated_count: int
+    estimated_dispute_value: float = 0.0
     top_agencies: List[str]
     root_cause_summary: str
     actionable_recommendation: str
@@ -18,8 +20,10 @@ class ThemeCluster(BaseModel):
 
 class InsightsDashboardResponse(BaseModel):
     total_active_tickets: int
+    total_weekly_tickets: int = 0
     total_sla_at_risk_or_breached: int
     total_escalated: int
     average_resolution_hours: float
+    executive_weekly_briefing: str
     theme_clusters: List[ThemeCluster]
     top_problematic_suppliers: List[dict]

@@ -35,6 +35,8 @@ export const TicketQueueTable: React.FC<TicketQueueTableProps> = ({
   searchQuery,
   onSearchChange,
   loading,
+  currentFilter,
+  onResetFilters,
 }) => {
   const [copiedHash, setCopiedHash] = React.useState<string | null>(null);
 

@@ -122,8 +122,10 @@ export interface ThemeCluster {
   label: string;
   category: string;
   ticket_count: number;
+  share_percentage: number;
   sla_breached_count: number;
   escalated_count: number;
+  estimated_dispute_value: number;
   top_agencies: string[];
   root_cause_summary: string;
   actionable_recommendation: string;
@@ -140,9 +142,11 @@ export interface ThemeCluster {
 
 export interface InsightsDashboard {
   total_active_tickets: number;
+  total_weekly_tickets: number;
   total_sla_at_risk_or_breached: number;
   total_escalated: number;
   average_resolution_hours: number;
+  executive_weekly_briefing: string;
   theme_clusters: ThemeCluster[];
   top_problematic_suppliers: Array<{
     name: string;
