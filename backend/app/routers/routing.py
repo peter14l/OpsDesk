@@ -10,7 +10,7 @@ router = APIRouter(prefix="/routing", tags=["Routing Engine"])
 
 @router.post("/evaluate/{ticket_id}")
 def run_routing_evaluation(ticket_id: str, apply: bool = False, db: Session = Depends(get_db)):
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    ticket = db.query(Ticket).filter((Ticket.id == ticket_id) | (Ticket.ticket_number == ticket_id)).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 

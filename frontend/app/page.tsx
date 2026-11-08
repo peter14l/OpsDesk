@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { Header, PRESET_USERS, CurrentUserSession } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { TicketQueueTable } from "@/components/TicketQueueTable";
@@ -13,11 +13,13 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DetailSkeleton } from "@/components/Skeletons";
 import { TicketSummary, TicketDetail, ContextLinks } from "@/lib/types";
 import { api } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Bell, Sparkles, X } from "lucide-react";
 
-export default function WorkspacePage() {
+function WorkspaceContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlTicketParam = searchParams.get("ticket");
 
   // Active Persona / Role
   const [currentUser, setCurrentUser] = useState<CurrentUserSession>(PRESET_USERS[0]);
@@ -30,7 +32,7 @@ export default function WorkspacePage() {
 
   // Data states
   const [tickets, setTickets] = useState<TicketSummary[]>([]);
-  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(urlTicketParam || null);
   const [activeTicket, setActiveTicket] = useState<TicketDetail | null>(null);
   const [contextLinks, setContextLinks] = useState<ContextLinks | null>(null);
   const [loadingList, setLoadingList] = useState(true);
@@ -78,10 +80,13 @@ export default function WorkspacePage() {
       const res = await api.getTickets(params);
       setTickets(res.items);
 
-      // Select first if none selected
-      if (!selectedTicketId && res.items.length > 0) {
+      // Select from URL param if available, otherwise first item or maintain selection
+      if (urlTicketParam && res.items.some((t) => t.id === urlTicketParam || t.ticket_number === urlTicketParam)) {
+        const found = res.items.find((t) => t.id === urlTicketParam || t.ticket_number === urlTicketParam);
+        if (found) setSelectedTicketId(found.id);
+      } else if (!selectedTicketId && res.items.length > 0) {
         setSelectedTicketId(res.items[0].id);
-      } else if (selectedTicketId && !res.items.find((t) => t.id === selectedTicketId) && res.items.length > 0) {
+      } else if (selectedTicketId && !res.items.some((t) => t.id === selectedTicketId) && res.items.length > 0) {
         setSelectedTicketId(res.items[0].id);
       }
     } catch (err) {
@@ -126,39 +131,53 @@ export default function WorkspacePage() {
         setIsLiveSync(true);
       };
 
-      const handleEvent = (eventPayload: any, titlePrefix: string) => {
-        loadTickets(false);
-        loadStats();
-        if (selectedTicketId) {
-          handleRefreshActive(false);
+      const handleEvent = async (eventPayload: any, titlePrefix: string) => {
+        try {
+          await loadTickets(false);
+          await loadStats();
+          if (selectedTicketId) {
+            await handleRefreshActive(false);
+          }
+        } catch (e) {
+          console.warn("Event update warning", e);
         }
         setLiveNotification(`${titlePrefix}: ${eventPayload.subject || eventPayload.ticket?.subject || 'Queue updated'}`);
         setTimeout(() => setLiveNotification(null), 6000);
       };
 
       eventSource.addEventListener("TICKET_CREATED", (e: any) => {
-        const data = JSON.parse(e.data);
-        handleEvent(data.data, "⚡ New Incident Arrived");
+        try {
+          const data = JSON.parse(e.data);
+          handleEvent(data.data, "⚡ New Incident Arrived");
+        } catch {}
       });
 
       eventSource.addEventListener("TICKET_UPDATED", (e: any) => {
-        const data = JSON.parse(e.data);
-        handleEvent(data.data, "🔄 Ticket State Updated");
+        try {
+          const data = JSON.parse(e.data);
+          handleEvent(data.data, "🔄 Ticket State Updated");
+        } catch {}
       });
 
       eventSource.addEventListener("TICKET_ESCALATED", (e: any) => {
-        const data = JSON.parse(e.data);
-        handleEvent(data.data, "🚨 Escalated to Manager");
+        try {
+          const data = JSON.parse(e.data);
+          handleEvent(data.data, "🚨 Escalated to Manager");
+        } catch {}
       });
 
       eventSource.addEventListener("TICKET_TRANSFERRED", (e: any) => {
-        const data = JSON.parse(e.data);
-        handleEvent(data.data, "⇄ Ownership Transferred");
+        try {
+          const data = JSON.parse(e.data);
+          handleEvent(data.data, "⇄ Ownership Transferred");
+        } catch {}
       });
 
       eventSource.addEventListener("SIDE_CONVO_UPDATED", (e: any) => {
-        const data = JSON.parse(e.data);
-        handleEvent(data.data, "✉️ Supplier Reply Received");
+        try {
+          const data = JSON.parse(e.data);
+          handleEvent(data.data, "✉️ Supplier Reply Received");
+        } catch {}
       });
 
       eventSource.onerror = () => {
@@ -171,9 +190,9 @@ export default function WorkspacePage() {
             const updates = await api.pollEvents(lastEventTimestamp.current);
             if (updates.events && updates.events.length > 0) {
               lastEventTimestamp.current = updates.timestamp;
-              loadTickets(false);
-              loadStats();
-              if (selectedTicketId) handleRefreshActive(false);
+              await loadTickets(false);
+              await loadStats();
+              if (selectedTicketId) await handleRefreshActive(false);
             }
           } catch {}
         }, 4000);
@@ -196,6 +215,7 @@ export default function WorkspacePage() {
       return;
     }
 
+    let isMounted = true;
     const fetchDetail = async () => {
       setLoadingDetail(true);
       setLoadingLinks(true);
@@ -204,34 +224,58 @@ export default function WorkspacePage() {
           api.getTicket(selectedTicketId),
           api.getContextLinks(selectedTicketId),
         ]);
-        setActiveTicket(detail);
-        setContextLinks(links);
-      } catch (err) {
-        console.error("Failed to load ticket details", err);
+        if (isMounted) {
+          setActiveTicket(detail);
+          setContextLinks(links);
+        }
+      } catch (err: any) {
+        console.warn("Failed to load ticket details", err);
+        if (isMounted) {
+          setActiveTicket(null);
+          setContextLinks(null);
+          // If ticket was not found (404), reset selection and select next available
+          if (err?.message && (err.message.includes("404") || err.message.includes("not found"))) {
+            setSelectedTicketId(null);
+            loadTickets(false);
+          }
+        }
       } finally {
-        setLoadingDetail(false);
-        setLoadingLinks(false);
+        if (isMounted) {
+          setLoadingDetail(false);
+          setLoadingLinks(false);
+        }
       }
     };
 
     fetchDetail();
+    return () => {
+      isMounted = false;
+    };
   }, [selectedTicketId]);
 
   const handleRefreshActive = async (showLoading = false) => {
-    if (selectedTicketId) {
-      if (showLoading) setLoadingDetail(true);
-      try {
-        const [detail, links] = await Promise.all([
-          api.getTicket(selectedTicketId),
-          api.getContextLinks(selectedTicketId),
-        ]);
-        setActiveTicket(detail);
-        setContextLinks(links);
-        loadTickets(false);
-        loadStats();
-      } finally {
-        if (showLoading) setLoadingDetail(false);
+    if (!selectedTicketId) return;
+    if (showLoading) setLoadingDetail(true);
+    try {
+      const [detail, links] = await Promise.all([
+        api.getTicket(selectedTicketId),
+        api.getContextLinks(selectedTicketId),
+      ]);
+      setActiveTicket(detail);
+      setContextLinks(links);
+      await loadTickets(false);
+      await loadStats();
+    } catch (err: any) {
+      console.warn("Failed to refresh active ticket", err);
+      // Graceful 404 recovery
+      if (err?.message && (err.message.includes("404") || err.message.includes("not found"))) {
+        setActiveTicket(null);
+        setContextLinks(null);
+        setSelectedTicketId(null);
+        await loadTickets(false);
       }
+    } finally {
+      if (showLoading) setLoadingDetail(false);
     }
   };
 
@@ -420,5 +464,13 @@ export default function WorkspacePage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function WorkspacePage() {
+  return (
+    <Suspense fallback={<DetailSkeleton />}>
+      <WorkspaceContent />
+    </Suspense>
   );
 }

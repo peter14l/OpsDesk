@@ -226,7 +226,7 @@ async def create_ticket(payload: TicketCreate, db: Session = Depends(get_db)):
 
 @router.get("/{ticket_id}", response_model=TicketDetail)
 def get_ticket(ticket_id: str, db: Session = Depends(get_db)):
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    ticket = db.query(Ticket).filter((Ticket.id == ticket_id) | (Ticket.ticket_number == ticket_id)).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
@@ -252,7 +252,7 @@ def get_ticket(ticket_id: str, db: Session = Depends(get_db)):
 
 @router.patch("/{ticket_id}", response_model=dict)
 async def update_ticket(ticket_id: str, payload: TicketUpdate, db: Session = Depends(get_db)):
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    ticket = db.query(Ticket).filter((Ticket.id == ticket_id) | (Ticket.ticket_number == ticket_id)).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
@@ -287,7 +287,7 @@ async def update_ticket(ticket_id: str, payload: TicketUpdate, db: Session = Dep
 
 @router.post("/{ticket_id}/messages", response_model=TicketMessageOut)
 async def add_ticket_message(ticket_id: str, payload: TicketMessageCreate, db: Session = Depends(get_db)):
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    ticket = db.query(Ticket).filter((Ticket.id == ticket_id) | (Ticket.ticket_number == ticket_id)).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
@@ -334,7 +334,7 @@ def get_context_links(ticket_id: str, db: Session = Depends(get_db)):
 
 @router.post("/{ticket_id}/escalate", response_model=dict)
 async def escalate_ticket(ticket_id: str, payload: TicketEscalateRequest, db: Session = Depends(get_db)):
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    ticket = db.query(Ticket).filter((Ticket.id == ticket_id) | (Ticket.ticket_number == ticket_id)).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
@@ -394,7 +394,7 @@ async def escalate_ticket(ticket_id: str, payload: TicketEscalateRequest, db: Se
 
 @router.post("/{ticket_id}/transfer", response_model=dict)
 async def transfer_ticket(ticket_id: str, payload: TicketTransferRequest, db: Session = Depends(get_db)):
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    ticket = db.query(Ticket).filter((Ticket.id == ticket_id) | (Ticket.ticket_number == ticket_id)).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 

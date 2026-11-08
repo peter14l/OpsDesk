@@ -10,7 +10,7 @@ def get_ticket_context_links(db: Session, ticket_id: str) -> Dict[str, Any]:
     Finds historical and active tickets sharing the same TBOH booking hash or Agency ID.
     Enables instant side-pane correlation to eradicate duplicate investigations.
     """
-    current_ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    current_ticket = db.query(Ticket).filter((Ticket.id == ticket_id) | (Ticket.ticket_number == ticket_id)).first()
     if not current_ticket:
         return {
             "current_ticket_id": ticket_id,
