@@ -19,6 +19,8 @@ import {
   Info,
   Clock,
   CheckCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 interface TicketDetailViewProps {
@@ -50,6 +52,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
   const [sideConvoReply, setSideConvoReply] = useState<{ [convoId: string]: string }>({});
   const [replyingSideConvo, setReplyingSideConvo] = useState(false);
   const [reEvaluating, setReEvaluating] = useState(false);
+  const [showRoutingDetails, setShowRoutingDetails] = useState(false);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,153 +128,144 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 transition-colors">
-      {/* Dense Action Toolbar */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 px-5 py-2.5 flex items-center justify-between gap-3 transition-colors">
-        {/* Left: Clean Status & Priority Dropdowns */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1">
-            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Status</span>
-            <select
-              value={ticket.status}
-              onChange={(e) => handleStatusChange(e.target.value as TicketStatus)}
-              className="text-xs font-semibold text-slate-800 dark:text-slate-200 bg-transparent focus:outline-none cursor-pointer"
-            >
-              <option value="NEW" className="dark:bg-slate-900">NEW</option>
-              <option value="OPEN" className="dark:bg-slate-900">OPEN</option>
-              <option value="PENDING_SUPPLIER" className="dark:bg-slate-900">PENDING SUPPLIER</option>
-              <option value="ESCALATED" className="dark:bg-slate-900">ESCALATED</option>
-              <option value="RESOLVED" className="dark:bg-slate-900">RESOLVED</option>
-              <option value="CLOSED" className="dark:bg-slate-900">CLOSED</option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1">
-            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Priority</span>
-            <select
-              value={ticket.priority}
-              onChange={(e) => handlePriorityChange(e.target.value as TicketPriority)}
-              className="text-xs font-semibold text-slate-800 dark:text-slate-200 bg-transparent focus:outline-none cursor-pointer"
-            >
-              <option value="LOW" className="dark:bg-slate-900">LOW</option>
-              <option value="MEDIUM" className="dark:bg-slate-900">MEDIUM</option>
-              <option value="HIGH" className="dark:bg-slate-900">HIGH</option>
-              <option value="URGENT" className="dark:bg-slate-900">URGENT</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Right: Operational Actions (Side-Convo, Transfer, Escalate) */}
-        <div className="flex items-center gap-2">
-          {/* Re-evaluate routing */}
-          <button
-            onClick={handleReEvaluateRouting}
-            disabled={reEvaluating}
-            title="Re-run routing engine scoring"
-            className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-          >
-            <Sparkles className={`w-4 h-4 ${reEvaluating ? "animate-spin text-blue-600" : ""}`} />
-          </button>
-
-          {/* New Supplier Side-Convo */}
-          <button
-            onClick={onOpenSideConvo}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xs transition-colors"
-          >
-            <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
-            <span>Supplier Thread</span>
-            {ticket.side_conversations?.length > 0 && (
-              <span className="ml-0.5 px-1.5 py-0.2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-mono font-bold rounded">
-                {ticket.side_conversations.length}
-              </span>
-            )}
-          </button>
-
-          {/* Transfer */}
-          <button
-            onClick={onOpenTransfer}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xs transition-colors"
-          >
-            <ArrowRightLeft className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
-            <span>Transfer</span>
-          </button>
-
-          {/* First-Class Escalation Button */}
-          <button
-            onClick={onOpenEscalate}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded-lg shadow-xs transition-all"
-          >
-            <ShieldAlert className="w-3.5 h-3.5" />
-            <span>Escalate to Manager</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Ticket Header & Metadata Summary Card */}
-      <div className="p-5 border-b border-slate-200/90 dark:border-slate-800 space-y-3.5 bg-white dark:bg-slate-900 transition-colors">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="font-mono text-xs font-bold text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                {ticket.ticket_number}
-              </span>
-              <span className="font-mono text-xs font-semibold text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                {ticket.tboh_hash}
-              </span>
-              <span className="text-xs text-slate-400 dark:text-slate-500">
-                Opened {formatDate(ticket.created_at)}
-              </span>
-            </div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
-              {ticket.subject}
-            </h2>
-          </div>
-
-          <div className="shrink-0 flex flex-col items-end gap-1">
-            <SlaBadge deadline={ticket.sla_deadline} status={ticket.sla_status} />
-            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">
-              Target: {formatDate(ticket.sla_deadline)}
+      {/* Unified Executive Header */}
+      <div className="p-4 px-6 border-b border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors space-y-2.5">
+        {/* Top Control Bar: Reference Pills + Actions */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          {/* Left: Identifiers & Status/Priority Pills */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+              {ticket.ticket_number}
             </span>
+            <span className="font-mono text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 px-2 py-1 rounded-md border border-slate-200/80 dark:border-slate-700">
+              {ticket.tboh_hash}
+            </span>
+
+            {/* Compact Status selector */}
+            <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase">Status</span>
+              <select
+                value={ticket.status}
+                onChange={(e) => handleStatusChange(e.target.value as TicketStatus)}
+                className="text-xs font-semibold text-slate-800 dark:text-slate-200 bg-transparent focus:outline-none cursor-pointer"
+              >
+                <option value="NEW" className="dark:bg-slate-900">NEW</option>
+                <option value="OPEN" className="dark:bg-slate-900">OPEN</option>
+                <option value="PENDING_SUPPLIER" className="dark:bg-slate-900">PENDING SUPPLIER</option>
+                <option value="ESCALATED" className="dark:bg-slate-900">ESCALATED</option>
+                <option value="RESOLVED" className="dark:bg-slate-900">RESOLVED</option>
+                <option value="CLOSED" className="dark:bg-slate-900">CLOSED</option>
+              </select>
+            </div>
+
+            {/* Compact Priority selector */}
+            <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase">Pri</span>
+              <select
+                value={ticket.priority}
+                onChange={(e) => handlePriorityChange(e.target.value as TicketPriority)}
+                className="text-xs font-semibold text-slate-800 dark:text-slate-200 bg-transparent focus:outline-none cursor-pointer"
+              >
+                <option value="LOW" className="dark:bg-slate-900">LOW</option>
+                <option value="MEDIUM" className="dark:bg-slate-900">MEDIUM</option>
+                <option value="HIGH" className="dark:bg-slate-900">HIGH</option>
+                <option value="URGENT" className="dark:bg-slate-900">URGENT</option>
+              </select>
+            </div>
+
+            {/* Re-evaluate score trigger */}
+            <button
+              onClick={handleReEvaluateRouting}
+              disabled={reEvaluating}
+              title="Re-run routing engine scoring"
+              className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+            >
+              <Sparkles className={`w-3.5 h-3.5 ${reEvaluating ? "animate-spin text-blue-600" : ""}`} />
+            </button>
+          </div>
+
+          {/* Right: Operational Actions */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onOpenSideConvo}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xs transition-colors"
+            >
+              <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+              <span>Supplier Thread</span>
+              {ticket.side_conversations?.length > 0 && (
+                <span className="px-1.5 py-0.2 bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-[10px] font-mono font-bold rounded">
+                  {ticket.side_conversations.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={onOpenTransfer}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xs transition-colors"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+              <span>Transfer</span>
+            </button>
+
+            <button
+              onClick={onOpenEscalate}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded-lg shadow-xs transition-all"
+            >
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>Escalate to Manager</span>
+            </button>
           </div>
         </div>
 
-        {/* Travel Metadata Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-xl p-3 text-xs">
-          <div className="space-y-0.5">
-            <span className="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider block">Partner Agency</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-200 truncate block">
+        {/* Ticket Title & SLA Target */}
+        <div className="flex items-start justify-between gap-4 pt-1">
+          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
+            {ticket.subject}
+          </h2>
+          <div className="shrink-0 flex items-center gap-2">
+            <SlaBadge deadline={ticket.sla_deadline} status={ticket.sla_status} />
+          </div>
+        </div>
+
+        {/* Travel Metadata Breadcrumb Strip + Details Toggle */}
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-0.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-medium text-slate-700 dark:text-slate-300">
               {ticket.agency?.name || "Agency"}
             </span>
+            <span>•</span>
+            <span>Check-in: <strong className="text-slate-700 dark:text-slate-300 font-mono">{formatDate(ticket.check_in_date)}</strong></span>
+            <span>•</span>
+            <span>Assigned: <strong className="text-slate-700 dark:text-slate-300">{ticket.assigned_agent?.full_name || "Unassigned"}</strong></span>
+            <span>•</span>
+            <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-semibold">Match: {ticket.routing_score.toFixed(0)}%</span>
           </div>
 
-          <div className="space-y-0.5">
-            <span className="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider block">Check-In Deadline</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-200 font-mono block">
-              {formatDate(ticket.check_in_date)}
-            </span>
-          </div>
-
-          <div className="space-y-0.5">
-            <span className="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider block">Assigned Agent</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-200 truncate block">
-              {ticket.assigned_agent?.full_name || "Unassigned"}
-            </span>
-          </div>
-
-          <div className="space-y-0.5">
-            <span className="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider block">Routing Match</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-200 font-mono block">
-              {ticket.routing_score.toFixed(1)} / 100
-            </span>
-          </div>
+          <button
+            onClick={() => setShowRoutingDetails(!showRoutingDetails)}
+            className="text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 shrink-0 ml-2"
+          >
+            <span>{showRoutingDetails ? "Hide Details" : "Routing Details"}</span>
+            {showRoutingDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
         </div>
 
-        {/* Routing Reason banner */}
-        {ticket.routing_reason && (
-          <div className="flex items-start gap-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-700 dark:text-slate-300">
-            <Info className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-            <p>
-              <strong className="text-slate-900 dark:text-slate-100 font-semibold">Routing Engine Rationale:</strong> {ticket.routing_reason}
-            </p>
+        {/* Expandable Routing & Travel Context Details */}
+        {showRoutingDetails && (
+          <div className="mt-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs space-y-2 animate-in fade-in duration-150">
+            {ticket.routing_reason && (
+              <div className="flex items-start gap-2 text-slate-700 dark:text-slate-300">
+                <Info className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <p>
+                  <strong className="font-semibold text-slate-900 dark:text-slate-100">Routing Algorithm Rationale:</strong> {ticket.routing_reason}
+                </p>
+              </div>
+            )}
+            <div className="flex items-center gap-4 text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-700">
+              <span>Opened: {formatDate(ticket.created_at)}</span>
+              <span>Target SLA: {formatDate(ticket.sla_deadline)}</span>
+              {ticket.last_cancellation_date && <span>LCD: {formatDate(ticket.last_cancellation_date)}</span>}
+            </div>
           </div>
         )}
       </div>

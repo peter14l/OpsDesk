@@ -177,63 +177,40 @@ export const TicketQueueTable: React.FC<TicketQueueTableProps> = ({
                 <div
                   key={t.id}
                   onClick={() => onSelectTicket(t.id)}
-                  className={`p-3.5 cursor-pointer transition-all border-l-2 ${
+                  className={`p-3 cursor-pointer transition-all border-l-2 ${
                     isSelected
-                      ? "bg-blue-50/40 dark:bg-blue-950/30 border-l-blue-600 shadow-2xs"
+                      ? "bg-blue-50/50 dark:bg-blue-950/40 border-l-blue-600 shadow-2xs"
                       : "border-l-transparent hover:bg-slate-50/80 dark:hover:bg-slate-800/50 text-slate-800 dark:text-slate-200"
                   }`}
                 >
-                  {/* Top Line: Ticket ID, TBOH, and SLA Badge */}
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <div className="flex items-center gap-2">
+                  {/* Top Line: Priority Dot, Ticket Number, TBOH, and SLA Badge */}
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-1.5 font-mono text-xs">
                       {getPriorityDot(t.priority)}
-                      <span className="font-mono font-bold text-xs text-slate-900 dark:text-slate-100">
+                      <span className="font-bold text-slate-900 dark:text-slate-100">
                         {t.ticket_number}
                       </span>
-                      <span className="text-slate-300 dark:text-slate-700">•</span>
-                      <div className="flex items-center gap-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">
-                        <span>{t.tboh_hash}</span>
-                        <button
-                          onClick={(e) => handleCopyHash(e, t.tboh_hash)}
-                          className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-0.5 rounded"
-                          title="Copy Booking Hash"
-                        >
-                          {copiedHash === t.tboh_hash ? (
-                            <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                          ) : (
-                            <Copy className="w-3 h-3" />
-                          )}
-                        </button>
-                      </div>
+                      <span className="text-slate-400 dark:text-slate-500 font-normal text-[11px]">
+                        {t.tboh_hash}
+                      </span>
                     </div>
 
                     <SlaBadge deadline={t.sla_deadline} status={t.sla_status} compact />
                   </div>
 
-                  {/* Middle Line: Subject */}
-                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 mb-2 leading-snug">
+                  {/* Subject Line */}
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 mb-1.5 leading-snug">
                     {t.subject}
                   </p>
 
-                  {/* Bottom Line: Metadata Chips */}
+                  {/* Bottom Line: Clean Metadata (Agency & Assignee) */}
                   <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                    <div className="flex items-center gap-1.5 truncate">
-                      <span className="font-medium text-slate-700 dark:text-slate-300 truncate max-w-[140px]">
-                        {t.agency_name || "Agency"}
-                      </span>
-                      <span className="text-slate-300 dark:text-slate-700">•</span>
-                      <span className="text-slate-400 dark:text-slate-500 font-mono text-[10px]">{t.region}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                      {getStatusBadge(t.status)}
-                      <div className="flex items-center gap-1 text-[11px] text-slate-600 dark:text-slate-300 font-medium">
-                        <User className="w-3 h-3 text-slate-400 dark:text-slate-500" />
-                        <span className="truncate max-w-[90px]">
-                          {t.assigned_agent_name ? t.assigned_agent_name.split(" ")[0] : "Unassigned"}
-                        </span>
-                      </div>
-                    </div>
+                    <span className="truncate max-w-[170px] text-slate-600 dark:text-slate-400">
+                      {t.agency_name || "Agency"}
+                    </span>
+                    <span className="truncate text-slate-600 dark:text-slate-300 font-medium">
+                      {t.assigned_agent_name ? t.assigned_agent_name.split(" ")[0] : "Unassigned"}
+                    </span>
                   </div>
                 </div>
               );

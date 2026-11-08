@@ -114,21 +114,21 @@ export const Navigation: React.FC<NavigationProps> = ({
           </div>
         </div>
 
-        {/* Region Filters */}
+        {/* Region Filters (Sleek Segmented Pill) */}
         <div>
-          <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 mb-2 flex items-center gap-1.5">
+          <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 mb-1.5 flex items-center gap-1.5">
             <Globe className="w-3 h-3 text-slate-400 dark:text-slate-500" />
             <span>Region</span>
           </div>
-          <div className="grid grid-cols-2 gap-1 px-1">
+          <div className="flex items-center p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200/80 dark:border-slate-700">
             {["ALL", "EMEA", "APAC", "AMER"].map((reg) => (
               <button
                 key={reg}
                 onClick={() => onRegionChange(reg)}
-                className={`py-1 text-xs font-medium rounded-md border text-center transition-all ${
+                className={`flex-1 py-1 text-[11px] font-semibold rounded-md text-center transition-all ${
                   selectedRegion === reg
-                    ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100 font-semibold shadow-2xs"
-                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 {reg === "ALL" ? "All" : reg}
@@ -139,14 +139,14 @@ export const Navigation: React.FC<NavigationProps> = ({
 
         {/* Category Filter */}
         <div>
-          <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 mb-2 flex items-center gap-1.5">
+          <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 mb-1.5 flex items-center gap-1.5">
             <Tag className="w-3 h-3 text-slate-400 dark:text-slate-500" />
             <span>Category</span>
           </div>
           <select
             value={selectedCategory}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md p-1.5 font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer"
+            className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer"
           >
             <option value="ALL">All Categories</option>
             <option value="OVERBOOKING">Hotel Overbooking / Walk</option>
@@ -159,35 +159,37 @@ export const Navigation: React.FC<NavigationProps> = ({
         </div>
       </div>
 
-      {/* Uncapped Enterprise Export */}
-      <div className="pt-3 border-t border-slate-200/90 dark:border-slate-800">
-        <div className="bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-lg p-2.5 space-y-2">
-          <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 text-xs font-semibold">
-            <Download className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
-            <span>Streaming Data Export</span>
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
+      {/* Streamlined Data Export Section */}
+      <div className="pt-3 border-t border-slate-200/90 dark:border-slate-800 space-y-1.5">
+        <div className="flex items-center justify-between text-xs px-1">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
+            <Download className="w-3 h-3 text-slate-400" />
+            Export Queue
+          </span>
+          <div className="flex items-center gap-1">
             <button
               onClick={() => handleExport("csv")}
-              className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-semibold py-1 px-2 rounded text-center shadow-2xs transition-colors"
+              className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors"
+              title="Stream RFC-4180 CSV"
             >
               CSV
             </button>
             <button
               onClick={() => handleExport("json")}
-              className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-semibold py-1 px-2 rounded text-center shadow-2xs transition-colors"
+              className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors"
+              title="Stream JSON Lines"
             >
               JSON
             </button>
           </div>
-          <button
-            onClick={() => handleExport("csv", true)}
-            className="w-full bg-slate-200/70 dark:bg-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-[10px] font-semibold py-1 px-2 rounded text-center transition-colors"
-            title="Chunked streaming of 50,000 synthetic operations rows with constant memory"
-          >
-            50k Row Benchmark Stream
-          </button>
         </div>
+        <button
+          onClick={() => handleExport("csv", true)}
+          className="w-full text-left text-[10px] text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 px-1 transition-colors"
+          title="Chunked streaming of 50,000 synthetic operations rows with constant memory"
+        >
+          • Run 50k Streaming Benchmark
+        </button>
       </div>
     </aside>
   );

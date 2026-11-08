@@ -182,16 +182,16 @@ export const Header: React.FC<HeaderProps> = ({
           {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
         </button>
 
-        {/* Live Simulation Trigger (Hackathon Demo Feature) */}
+        {/* Live Simulation Trigger (Discreet Demo Trigger) */}
         {onSimulateInbound && (
           <button
             onClick={onSimulateInbound}
             disabled={simulating}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-lg transition-all disabled:opacity-50 shadow-xs border border-transparent dark:border-slate-700"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg transition-all disabled:opacity-50 border border-slate-200 dark:border-slate-700"
             title="Inject simulated emergency hotel check-in walk to test live queue updates"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            <span>{simulating ? "Simulating..." : "Simulate Inbound"}</span>
+            <span>{simulating ? "Simulating..." : "Simulate"}</span>
           </button>
         )}
 
