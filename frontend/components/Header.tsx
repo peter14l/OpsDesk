@@ -136,7 +136,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* View Switcher Tabs */}
-        <nav className="flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/80 dark:border-slate-750">
+        <nav className="flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/80 dark:border-slate-700">
           <button
             onClick={() => onTabChange("workspace")}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${

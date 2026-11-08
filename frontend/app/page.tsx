@@ -411,7 +411,7 @@ function WorkspaceContent() {
               {!showContextPane && (
                 <button
                   onClick={() => setShowContextPane(true)}
-                  className="w-7 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border-l border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-mono write-vertical"
+                  className="w-7 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border-l border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-mono write-vertical"
                   title="Show Context Linkage Panel"
                 >
                   <span className="rotate-90 whitespace-nowrap text-[11px] font-semibold tracking-wider uppercase">

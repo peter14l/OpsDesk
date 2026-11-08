@@ -79,7 +79,7 @@ export const ContextLinkagePane: React.FC<ContextLinkagePaneProps> = ({
                   <div
                     key={t.id}
                     onClick={() => onSelectTicket(t.id)}
-                    className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-750 bg-white dark:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group shadow-2xs"
+                    className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group shadow-2xs"
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-mono font-bold text-xs text-blue-600 dark:text-blue-400 group-hover:underline flex items-center gap-1">

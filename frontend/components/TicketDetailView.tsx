@@ -124,7 +124,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-white">
+    <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 transition-colors">
       {/* Dense Action Toolbar */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 px-5 py-2.5 flex items-center justify-between gap-3 transition-colors">
         {/* Left: Clean Status & Priority Dropdowns */}
@@ -316,12 +316,12 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
       </div>
 
       {/* Tab Content Body */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-white dark:bg-slate-900 transition-colors">
         {/* TAB 1: Customer Timeline */}
         {activeTab === "timeline" && (
           <div className="space-y-3.5">
             {(!ticket.messages || ticket.messages.length === 0) ? (
-              <div className="py-12 text-center space-y-2 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-850/50">
+              <div className="py-12 text-center space-y-2 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-800/40">
                 <MessageSquare className="w-7 h-7 text-slate-300 dark:text-slate-600 mx-auto" />
                 <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No customer notes logged yet</p>
                 <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
@@ -337,7 +337,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
                     className={`rounded-xl border p-4 space-y-2.5 transition-all ${
                       isNote
                         ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/80 dark:border-amber-800/40"
-                        : "bg-white dark:bg-slate-850 border-slate-200/80 dark:border-slate-800 shadow-2xs"
+                        : "bg-white dark:bg-slate-800/80 border-slate-200/80 dark:border-slate-700/80 shadow-2xs"
                     }`}
                   >
                     <div className="flex items-center justify-between text-xs">
@@ -381,9 +381,9 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
         {activeTab === "side_convos" && (
           <div className="space-y-6">
             {(!ticket.side_conversations || ticket.side_conversations.length === 0) ? (
-              <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-                <Mail className="w-8 h-8 text-slate-400 mx-auto" />
-                <p className="text-xs text-slate-600 font-medium">
+              <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl space-y-3">
+                <Mail className="w-8 h-8 text-slate-400 dark:text-slate-500 mx-auto" />
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                   No supplier side-conversations launched yet for this ticket.
                 </p>
                 <button
@@ -397,27 +397,27 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
               ticket.side_conversations.map((convo) => (
                 <div
                   key={convo.id}
-                  className="border border-amber-300 rounded-xl bg-amber-50/30 overflow-hidden shadow-xs"
+                  className="border border-amber-300 dark:border-amber-700/60 rounded-xl bg-amber-50/30 dark:bg-amber-950/20 overflow-hidden shadow-xs"
                 >
                   {/* Convo Header with Preserved Recipients */}
-                  <div className="bg-amber-100/70 border-b border-amber-200 p-3 flex items-start justify-between gap-3">
+                  <div className="bg-amber-100/70 dark:bg-amber-950/60 border-b border-amber-200 dark:border-amber-800/60 p-3 flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="bg-amber-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">
                           Supplier Thread
                         </span>
-                        <h4 className="font-bold text-xs text-amber-950">{convo.subject}</h4>
+                        <h4 className="font-bold text-xs text-amber-950 dark:text-amber-100">{convo.subject}</h4>
                       </div>
-                      <p className="text-[11px] text-amber-900 font-medium">
+                      <p className="text-[11px] text-amber-900 dark:text-amber-300 font-medium">
                         Supplier: <span className="font-bold">{convo.supplier_name}</span> ({convo.supplier_email})
                       </p>
                       {/* Preserved Recipient Chips */}
                       <div className="flex flex-wrap items-center gap-1 mt-1.5">
-                        <span className="text-[10px] font-bold text-amber-800">Preserved Recipients:</span>
+                        <span className="text-[10px] font-bold text-amber-800 dark:text-amber-400">Preserved Recipients:</span>
                         {convo.recipient_emails.map((r) => (
                           <span
                             key={r}
-                            className="bg-white/80 border border-amber-300 text-amber-900 text-[10px] font-mono px-1.5 py-0.2 rounded"
+                            className="bg-white/90 dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 text-[10px] font-mono px-1.5 py-0.2 rounded"
                           >
                             {r}
                           </span>
@@ -427,8 +427,8 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
                     <span
                       className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
                         convo.status === "WAITING_ON_SUPPLIER"
-                          ? "bg-amber-200 text-amber-900"
-                          : "bg-emerald-100 text-emerald-800"
+                          ? "bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200"
+                          : "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"
                       }`}
                     >
                       {convo.status}
@@ -442,22 +442,22 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
                         key={m.id}
                         className={`p-3 rounded-lg text-xs leading-relaxed ${
                           m.is_supplier_incoming
-                            ? "bg-white border border-slate-300 text-slate-900"
-                            : "bg-amber-100/80 border border-amber-200 text-amber-950 font-medium"
+                            ? "bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+                            : "bg-amber-100/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-950 dark:text-amber-200 font-medium"
                         }`}
                       >
                         <div className="flex items-center justify-between text-[11px] mb-1 font-mono">
-                          <span className="font-semibold text-slate-800">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {m.is_supplier_incoming ? `Inbound Supplier [${m.sender_email}]` : `Outbound Desk [${m.sender_email}]`}
                           </span>
-                          <span className="text-slate-400">{formatDate(m.created_at)}</span>
+                          <span className="text-slate-400 dark:text-slate-500">{formatDate(m.created_at)}</span>
                         </div>
                         <p className="whitespace-pre-wrap">{m.body}</p>
                       </div>
                     ))}
 
                     {/* Quick Reply Box */}
-                    <div className="pt-2 border-t border-amber-200/80 space-y-2">
+                    <div className="pt-2 border-t border-amber-200/80 dark:border-amber-800/60 space-y-2">
                       <textarea
                         rows={2}
                         value={sideConvoReply[convo.id] || ""}
@@ -465,14 +465,14 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({
                           setSideConvoReply({ ...sideConvoReply, [convo.id]: e.target.value })
                         }
                         placeholder="Reply to supplier and all bound recipients..."
-                        className="w-full text-xs bg-white border border-slate-300 rounded-lg p-2 font-medium focus:ring-1 focus:ring-amber-500"
+                        className="w-full text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg p-2 font-medium focus:ring-1 focus:ring-amber-500"
                       />
                       <div className="flex items-center justify-between">
                         <button
                           type="button"
                           onClick={() => handleSendSupplierReply(convo.id, true)}
                           disabled={replyingSideConvo}
-                          className="text-[11px] text-slate-600 hover:text-slate-900 font-semibold underline"
+                          className="text-[11px] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-semibold underline"
                         >
                           + Simulate Inbound Supplier Reply
                         </button>
