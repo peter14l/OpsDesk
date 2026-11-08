@@ -50,7 +50,7 @@ export default function InsightsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       <Header
         currentUser={currentUser}
         onUserChange={setCurrentUser}
@@ -74,23 +74,23 @@ export default function InsightsPage() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="bg-indigo-100 text-indigo-800 font-bold text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-indigo-600" />
-                Theme Clustering Engine
+              <span className="bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-semibold text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                Defect Clustering Engine
               </span>
-              <span className="text-xs text-slate-500 font-mono">TBO Operations Intelligence</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">TBO Operations Intelligence</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
               Ops Insights & Upstream Defect Clusters
             </h1>
-            <p className="text-xs text-slate-600 max-w-3xl mt-1 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 max-w-3xl mt-1 leading-relaxed">
               Dynamically groups operational tickets across hotel bedbanks, airlines, and B2B agencies into systemic themes. Surfaces chronic supplier CRS errors and rate mismatches before they trigger multi-million dollar penalties.
             </p>
           </div>
 
           <button
             onClick={() => window.print()}
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-300 rounded-lg shadow-xs"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs border border-slate-300 dark:border-slate-700 rounded-lg shadow-xs transition-colors"
           >
             <span>Print Executive Summary</span>
           </button>
@@ -134,45 +134,45 @@ export default function InsightsPage() {
 
             {/* Top Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
                   <span className="font-medium">Active Incidents</span>
                   <Layers className="w-4 h-4 text-sky-600" />
                 </div>
-                <div className="text-2xl font-black text-slate-900 font-mono">
+                <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">
                   {data.total_active_tickets}
                 </div>
-                <div className="text-[11px] text-slate-500 mt-1">Across 4 global distribution regions</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Across 4 global distribution regions</div>
               </div>
 
-              <div className="bg-white p-4 rounded-xl border border-rose-200 bg-rose-50/20 shadow-xs">
-                <div className="flex items-center justify-between text-xs text-rose-700 mb-2 font-semibold">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/20 dark:bg-rose-950/20 shadow-xs">
+                <div className="flex items-center justify-between text-xs text-rose-700 dark:text-rose-400 mb-2 font-semibold">
                   <span>SLA At-Risk / Breached</span>
                   <AlertTriangle className="w-4 h-4 text-rose-600" />
                 </div>
-                <div className="text-2xl font-black text-rose-700 font-mono">
+                <div className="text-2xl font-black text-rose-700 dark:text-rose-400 font-mono">
                   {data.total_sla_at_risk_or_breached}
                 </div>
-                <div className="text-[11px] text-rose-600 mt-1">Driven by imminent check-in proximity</div>
+                <div className="text-[11px] text-rose-600 dark:text-rose-400 mt-1">Driven by imminent check-in proximity</div>
               </div>
 
-              <div className="bg-white p-4 rounded-xl border border-purple-200 bg-purple-50/20 shadow-xs">
-                <div className="flex items-center justify-between text-xs text-purple-800 mb-2 font-semibold">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-purple-200 dark:border-purple-900/60 bg-purple-50/20 dark:bg-purple-950/20 shadow-xs">
+                <div className="flex items-center justify-between text-xs text-purple-800 dark:text-purple-400 mb-2 font-semibold">
                   <span>Escalated to Managers</span>
                   <ShieldAlert className="w-4 h-4 text-purple-600" />
                 </div>
-                <div className="text-2xl font-black text-purple-900 font-mono">
+                <div className="text-2xl font-black text-purple-900 dark:text-purple-300 font-mono">
                   {data.total_escalated}
                 </div>
-                <div className="text-[11px] text-purple-700 mt-1">Requiring supervisor financial waiver</div>
+                <div className="text-[11px] text-purple-700 dark:text-purple-400 mt-1">Requiring supervisor financial waiver</div>
               </div>
 
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
                   <span className="font-medium">Avg Resolution Target</span>
                   <TrendingUp className="w-4 h-4 text-emerald-600" />
                 </div>
-                <div className="text-2xl font-black text-slate-900 font-mono">
+                <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">
                   {data.average_resolution_hours}h
                 </div>
                 <div className="text-[11px] text-emerald-600 font-medium mt-1">
@@ -185,11 +185,11 @@ export default function InsightsPage() {
               {/* Left 2 Cols: Theme Clusters */}
               <div className="lg:col-span-2 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <Tag className="w-4 h-4 text-indigo-600" />
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     <span>Active Theme Clusters & Root Cause Analysis</span>
                   </h2>
-                  <span className="text-xs font-mono text-slate-500">
+                  <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
                     {data.theme_clusters.length} Identified Clusters
                   </span>
                 </div>
@@ -198,7 +198,7 @@ export default function InsightsPage() {
                   {data.theme_clusters.map((cluster) => (
                     <div
                       key={cluster.tag}
-                      className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-3"
+                      className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs space-y-3"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1">
@@ -210,35 +210,35 @@ export default function InsightsPage() {
                             >
                               {cluster.category}
                             </span>
-                            <span className="text-xs font-mono text-slate-400">#{cluster.tag}</span>
-                            <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold font-mono px-2 py-0.5 rounded-full">
+                            <span className="text-xs font-mono text-slate-400 dark:text-slate-500">#{cluster.tag}</span>
+                            <span className="bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[10px] font-bold font-mono px-2 py-0.5 rounded-full">
                               {cluster.share_percentage}% of Volume
                             </span>
                           </div>
-                          <h3 className="text-sm font-bold text-slate-900">{cluster.label}</h3>
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{cluster.label}</h3>
                         </div>
 
                         <div className="flex items-center gap-3 text-right shrink-0">
                           <div>
-                            <span className="text-base font-extrabold font-mono text-slate-900 block">
+                            <span className="text-base font-extrabold font-mono text-slate-900 dark:text-slate-100 block">
                               {cluster.ticket_count}
                             </span>
                             <span className="text-[10px] text-slate-400 uppercase font-medium">Tickets</span>
                           </div>
 
-                          <div className="bg-amber-50 border border-amber-200 px-2 py-1 rounded-md text-right">
-                            <span className="text-xs font-bold font-mono text-amber-800 block">
+                          <div className="bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-2 py-1 rounded-md text-right">
+                            <span className="text-xs font-bold font-mono text-amber-800 dark:text-amber-300 block">
                               ${cluster.estimated_dispute_value.toLocaleString()}
                             </span>
-                            <span className="text-[9px] text-amber-600 uppercase font-semibold">Exposure</span>
+                            <span className="text-[9px] text-amber-600 dark:text-amber-400 uppercase font-semibold">Exposure</span>
                           </div>
 
                           {cluster.sla_breached_count > 0 && (
-                            <div className="bg-rose-50 border border-rose-200 px-2 py-1 rounded-md">
-                              <span className="text-xs font-bold font-mono text-rose-700 block">
+                            <div className="bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-2 py-1 rounded-md">
+                              <span className="text-xs font-bold font-mono text-rose-700 dark:text-rose-300 block">
                                 {cluster.sla_breached_count}
                               </span>
-                              <span className="text-[9px] text-rose-600 uppercase font-semibold">Breached</span>
+                              <span className="text-[9px] text-rose-600 dark:text-rose-400 uppercase font-semibold">Breached</span>
                             </div>
                           )}
                         </div>
@@ -246,26 +246,26 @@ export default function InsightsPage() {
 
                       {/* Share of Volume Visual Progress Bar */}
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                        <div className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                           <div
                             className="bg-indigo-600 h-1.5 rounded-full"
                             style={{ width: `${Math.min(cluster.share_percentage, 100)}%` }}
                           />
                         </div>
-                        <span className="text-[10px] font-mono font-semibold text-slate-500">
+                        <span className="text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400">
                           {cluster.share_percentage}%
                         </span>
                       </div>
 
                       {/* Root Cause & Recommendation */}
-                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2 text-xs">
+                      <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg p-3 space-y-2 text-xs">
                         <div>
-                          <span className="font-bold text-slate-800">Root Cause: </span>
-                          <span className="text-slate-600">{cluster.root_cause_summary}</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200">Root Cause: </span>
+                          <span className="text-slate-600 dark:text-slate-400">{cluster.root_cause_summary}</span>
                         </div>
-                        <div className="pt-2 border-t border-slate-200/80">
-                          <span className="font-bold text-emerald-800">Actionable Remediation: </span>
-                          <span className="text-emerald-950 font-medium">
+                        <div className="pt-2 border-t border-slate-200/80 dark:border-slate-700">
+                          <span className="font-bold text-emerald-800 dark:text-emerald-400">Actionable Remediation: </span>
+                          <span className="text-emerald-950 dark:text-emerald-300 font-medium">
                             {cluster.actionable_recommendation}
                           </span>
                         </div>
@@ -273,29 +273,29 @@ export default function InsightsPage() {
 
                       {/* Affected Agencies & Sample Linked Tickets */}
                       <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs">
-                        <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
-                          <span className="font-semibold text-slate-700">Affected Partners:</span>
+                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
+                          <span className="font-semibold text-slate-700 dark:text-slate-300">Affected Partners:</span>
                           {cluster.top_agencies.length > 0 ? (
                             cluster.top_agencies.map((ag) => (
-                              <span key={ag} className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-medium">
+                              <span key={ag} className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded font-medium">
                                 {ag}
                               </span>
                             ))
                           ) : (
-                            <span className="text-slate-400">Network-wide</span>
+                            <span className="text-slate-400 dark:text-slate-500">Network-wide</span>
                           )}
                         </div>
 
                         {/* Direct Deep-Links to Sample Tickets */}
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-semibold text-slate-600">Sample Tickets:</span>
+                          <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Sample Tickets:</span>
                           {cluster.sample_tickets && cluster.sample_tickets.length > 0 ? (
                             cluster.sample_tickets.slice(0, 3).map((st) => (
                               <button
                                 key={st.id}
                                 onClick={() => router.push(`/?ticket=${st.id}`)}
                                 title={`${st.subject} (${st.status})`}
-                                className="text-[11px] font-mono font-bold text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-2 py-0.5 rounded flex items-center gap-1 transition-colors"
+                                className="text-[11px] font-mono font-bold text-sky-700 dark:text-sky-300 hover:text-sky-900 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/80 border border-sky-200 dark:border-sky-800 px-2 py-0.5 rounded flex items-center gap-1 transition-colors"
                               >
                                 <span>{st.ticket_number}</span>
                                 <ExternalLink className="w-2.5 h-2.5" />
@@ -313,13 +313,13 @@ export default function InsightsPage() {
 
               {/* Right Col: Supplier Incident Leaderboard */}
               <div className="space-y-4">
-                <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-amber-600" />
                   <span>Top Degraded Suppliers / Chains</span>
                 </h2>
 
-                <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-4">
-                  <p className="text-xs text-slate-500 leading-relaxed">
+                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-xs space-y-4">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                     Third-party hotel suppliers with the highest volume of operational inquiries and CRS failures in active side-conversations:
                   </p>
 
@@ -327,25 +327,25 @@ export default function InsightsPage() {
                     {data.top_problematic_suppliers.map((sup, idx) => (
                       <div
                         key={sup.name}
-                        className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs"
+                        className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs"
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-mono font-bold flex items-center justify-center text-[10px]">
+                          <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono font-bold flex items-center justify-center text-[10px]">
                             {idx + 1}
                           </span>
-                          <span className="font-bold text-slate-800">{sup.name}</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200">{sup.name}</span>
                         </div>
-                        <span className="font-mono font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[11px]">
+                        <span className="font-mono font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-2 py-0.5 rounded text-[11px]">
                           {sup.incident_count} Threads
                         </span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="pt-3 border-t border-slate-200">
+                  <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
                     <button
                       onClick={() => router.push("/")}
-                      className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
                     >
                       <span>Jump to Operations Desk</span>
                       <ArrowRight className="w-3.5 h-3.5" />

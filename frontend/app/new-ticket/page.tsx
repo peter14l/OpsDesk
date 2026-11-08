@@ -133,39 +133,39 @@ export default function NewTicketPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors">
       {/* Top Bar */}
-      <header className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3 flex items-center justify-between">
         <Link
           href="/"
-          className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+          className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Return to Operations Workspace</span>
+          <span>Return to Operations Desk</span>
         </Link>
         <div className="flex items-center gap-2">
-          <Plane className="w-4 h-4 text-sky-600 -rotate-45" />
-          <span className="font-extrabold text-sm text-slate-900">OpsDesk Dispatch Engine</span>
+          <Plane className="w-4 h-4 text-blue-600 -rotate-45" />
+          <span className="font-bold text-sm text-slate-900 dark:text-slate-100">OpsDesk Dispatch Engine</span>
         </div>
       </header>
 
       <main className="flex-1 max-w-2xl w-full mx-auto p-6">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-5">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-5">
           <div>
-            <h1 className="text-lg font-bold text-slate-900">
+            <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">
               Submit B2B Travel Operations Incident
             </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Enter hotel/flight booking details. The AI-assisted intent classifier and routing engine will score and dispatch this ticket immediately.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Enter hotel/flight booking details. The travel intent classifier and 4-factor routing engine will score and dispatch this ticket immediately.
             </p>
           </div>
 
-          {/* Quick Click Prompts to Impress Judges */}
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5 space-y-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-              💡 Demo Quick-Fill Scenarios:
+          {/* Quick Scenario Presets */}
+          <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-400 block">
+              Test Scenario Presets:
             </span>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() =>
@@ -174,9 +174,10 @@ export default function NewTicketPage() {
                     "Refund hasn't arrived for booking TBOH-8492041 after 10 days. Pre-authorization deduction disputed by client bank."
                   )
                 }
-                className="text-[11px] font-medium bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-800 border border-slate-200 hover:border-sky-300 rounded px-2 py-1 transition-colors"
+                className="text-xs font-medium bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 transition-colors flex items-center gap-1.5 shadow-2xs"
               >
-                💸 Refund Delay Prompt
+                <Target className="w-3.5 h-3.5 text-blue-600" />
+                <span>Refund Delay Scenario</span>
               </button>
               <button
                 type="button"
@@ -186,9 +187,10 @@ export default function NewTicketPage() {
                     "Guest arrived at hotel; duty receptionist states property is overbooked and walked guest to another hotel without voucher endorsement."
                   )
                 }
-                className="text-[11px] font-medium bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-800 border border-slate-200 hover:border-rose-300 rounded px-2 py-1 transition-colors"
+                className="text-xs font-medium bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 transition-colors flex items-center gap-1.5 shadow-2xs"
               >
-                🏨 Hotel Overbooking Walk
+                <Building className="w-3.5 h-3.5 text-rose-600" />
+                <span>Hotel Overbooking Emergency</span>
               </button>
               <button
                 type="button"
@@ -198,9 +200,10 @@ export default function NewTicketPage() {
                     "Primary traveler hospitalized with cardiac illness. Requesting non-refundable cancellation penalty waiver with hospital discharge summary."
                   )
                 }
-                className="text-[11px] font-medium bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-800 border border-slate-200 hover:border-amber-300 rounded px-2 py-1 transition-colors"
+                className="text-xs font-medium bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 transition-colors flex items-center gap-1.5 shadow-2xs"
               >
-                🏥 Medical Cancellation Waiver
+                <Clock className="w-3.5 h-3.5 text-amber-600" />
+                <span>Medical Cancellation Waiver</span>
               </button>
             </div>
           </div>

@@ -69,13 +69,13 @@ export const Navigation: React.FC<NavigationProps> = ({
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-3 select-none">
+    <aside className="w-56 bg-white dark:bg-slate-900 border-r border-slate-200/90 dark:border-slate-800 flex flex-col justify-between p-3 select-none shrink-0 transition-colors">
       <div className="space-y-5">
         {/* Main Queues */}
         <div>
-          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-2 flex items-center justify-between">
+          <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 mb-2 flex items-center justify-between">
             <span>Operational Views</span>
-            <Filter className="w-3 h-3" />
+            <Filter className="w-3 h-3 text-slate-400 dark:text-slate-500" />
           </div>
           <div className="space-y-0.5">
             {navItems.map((item) => {
@@ -87,22 +87,22 @@ export const Navigation: React.FC<NavigationProps> = ({
                   onClick={() => onFilterChange(item.id)}
                   className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
                     isActive
-                      ? "bg-sky-50 text-sky-800 font-bold border border-sky-200 shadow-xs"
-                      : "text-slate-700 hover:bg-slate-100"
+                      ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
                   }`}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <Icon className={`w-4 h-4 shrink-0 ${item.color}`} />
+                    <Icon className={`w-3.5 h-3.5 shrink-0 ${item.color}`} />
                     <span className="truncate">{item.label}</span>
                   </div>
                   {item.count !== null && item.count > 0 && (
                     <span
-                      className={`text-[11px] font-mono font-bold px-1.5 py-0.2 rounded-full ${
+                      className={`text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded ${
                         item.highlight
-                          ? "bg-rose-100 text-rose-700 animate-pulse"
+                          ? "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800"
                           : isActive
-                          ? "bg-sky-200/80 text-sky-900"
-                          : "bg-slate-100 text-slate-600"
+                          ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 shadow-2xs"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                       }`}
                     >
                       {item.count}
@@ -116,8 +116,8 @@ export const Navigation: React.FC<NavigationProps> = ({
 
         {/* Region Filters */}
         <div>
-          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-2 flex items-center gap-1.5">
-            <Globe className="w-3 h-3 text-slate-400" />
+          <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 mb-2 flex items-center gap-1.5">
+            <Globe className="w-3 h-3 text-slate-400 dark:text-slate-500" />
             <span>Region</span>
           </div>
           <div className="grid grid-cols-2 gap-1 px-1">
@@ -127,11 +127,11 @@ export const Navigation: React.FC<NavigationProps> = ({
                 onClick={() => onRegionChange(reg)}
                 className={`py-1 text-xs font-medium rounded-md border text-center transition-all ${
                   selectedRegion === reg
-                    ? "bg-slate-900 text-white border-slate-900 font-bold shadow-xs"
-                    : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                    ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100 font-semibold shadow-2xs"
+                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
                 }`}
               >
-                {reg === "ALL" ? "All Regions" : reg}
+                {reg === "ALL" ? "All" : reg}
               </button>
             ))}
           </div>
@@ -139,14 +139,14 @@ export const Navigation: React.FC<NavigationProps> = ({
 
         {/* Category Filter */}
         <div>
-          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-2 flex items-center gap-1.5">
-            <Tag className="w-3 h-3 text-slate-400" />
-            <span>Issue Category</span>
+          <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 mb-2 flex items-center gap-1.5">
+            <Tag className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+            <span>Category</span>
           </div>
           <select
             value={selectedCategory}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full text-xs bg-slate-50 border border-slate-200 rounded-md p-1.5 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-sky-500"
+            className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md p-1.5 font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer"
           >
             <option value="ALL">All Categories</option>
             <option value="OVERBOOKING">Hotel Overbooking / Walk</option>
@@ -160,35 +160,32 @@ export const Navigation: React.FC<NavigationProps> = ({
       </div>
 
       {/* Uncapped Enterprise Export */}
-      <div className="pt-4 border-t border-slate-200">
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5">
-          <div className="flex items-center gap-1.5 text-slate-800 text-xs font-bold mb-1">
-            <Download className="w-3.5 h-3.5 text-sky-600" />
-            <span>Uncapped Stream Export</span>
+      <div className="pt-3 border-t border-slate-200/90 dark:border-slate-800">
+        <div className="bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-lg p-2.5 space-y-2">
+          <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 text-xs font-semibold">
+            <Download className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+            <span>Streaming Data Export</span>
           </div>
-          <p className="text-[10px] text-slate-500 mb-2 leading-relaxed">
-            RFC-4180 compliant raw data stream for operations audits and BI ingest.
-          </p>
-          <div className="grid grid-cols-2 gap-1.5 mb-2">
+          <div className="grid grid-cols-2 gap-1.5">
             <button
               onClick={() => handleExport("csv")}
-              className="bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-mono text-[11px] font-bold py-1 px-2 rounded text-center shadow-xs transition-colors"
+              className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-semibold py-1 px-2 rounded text-center shadow-2xs transition-colors"
             >
-              CSV Stream
+              CSV
             </button>
             <button
               onClick={() => handleExport("json")}
-              className="bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-mono text-[11px] font-bold py-1 px-2 rounded text-center shadow-xs transition-colors"
+              className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-semibold py-1 px-2 rounded text-center shadow-2xs transition-colors"
             >
-              JSON Stream
+              JSON
             </button>
           </div>
           <button
             onClick={() => handleExport("csv", true)}
-            className="w-full bg-slate-200/80 hover:bg-slate-300 text-slate-800 font-mono text-[10px] font-bold py-1 px-2 rounded text-center transition-colors"
-            title="Demonstrate chunked streaming of 50,000 synthetic operations rows with O(1) memory"
+            className="w-full bg-slate-200/70 dark:bg-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-[10px] font-semibold py-1 px-2 rounded text-center transition-colors"
+            title="Chunked streaming of 50,000 synthetic operations rows with constant memory"
           >
-            🚀 50k Row Benchmark Stream
+            50k Row Benchmark Stream
           </button>
         </div>
       </div>

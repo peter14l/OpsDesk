@@ -1,20 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { TicketSummary } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { SlaBadge } from "@/components/SlaBadge";
 import { TableSkeleton } from "@/components/Skeletons";
 import { EmptyState } from "@/components/EmptyState";
 import {
-  Clock,
   Search,
-  Building,
-  User,
-  Sparkles,
-  AlertCircle,
   Copy,
   Check,
+  Clock,
+  User,
+  LayoutList,
+  Table as TableIcon,
+  Building2,
+  AlertCircle,
 } from "lucide-react";
 
 interface TicketQueueTableProps {
@@ -38,7 +39,8 @@ export const TicketQueueTable: React.FC<TicketQueueTableProps> = ({
   currentFilter,
   onResetFilters,
 }) => {
-  const [copiedHash, setCopiedHash] = React.useState<string | null>(null);
+  const [copiedHash, setCopiedHash] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"feed" | "table">("feed");
 
   const handleCopyHash = (e: React.MouseEvent, hash: string) => {
     e.stopPropagation();
@@ -47,71 +49,104 @@ export const TicketQueueTable: React.FC<TicketQueueTableProps> = ({
     setTimeout(() => setCopiedHash(null), 2000);
   };
 
-  const getPriorityBadge = (p: string) => {
+  const getPriorityDot = (p: string) => {
     switch (p) {
       case "URGENT":
-        return <span className="bg-rose-100 text-rose-800 border border-rose-300 font-bold px-1.5 py-0.5 rounded text-[10px]">URGENT</span>;
+        return <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" title="Urgent Priority" />;
       case "HIGH":
-        return <span className="bg-orange-100 text-orange-800 border border-orange-300 font-semibold px-1.5 py-0.5 rounded text-[10px]">HIGH</span>;
+        return <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" title="High Priority" />;
       case "MEDIUM":
-        return <span className="bg-sky-50 text-sky-800 border border-sky-200 font-medium px-1.5 py-0.5 rounded text-[10px]">MEDIUM</span>;
+        return <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" title="Medium Priority" />;
       default:
-        return <span className="bg-slate-100 text-slate-600 font-medium px-1.5 py-0.5 rounded text-[10px]">LOW</span>;
+        return <span className="w-2 h-2 rounded-full bg-slate-400 shrink-0" title="Low Priority" />;
     }
   };
 
   const getStatusBadge = (s: string) => {
     switch (s) {
       case "ESCALATED":
-        return <span className="bg-purple-100 text-purple-900 border border-purple-300 font-bold px-2 py-0.5 rounded-full text-[10px] animate-pulse">ESCALATED</span>;
+        return (
+          <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+            ESCALATED
+          </span>
+        );
       case "PENDING_SUPPLIER":
-        return <span className="bg-amber-100 text-amber-900 border border-amber-300 font-semibold px-2 py-0.5 rounded-full text-[10px]">PENDING SUPPLIER</span>;
+        return (
+          <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+            SUPPLIER
+          </span>
+        );
       case "OPEN":
-        return <span className="bg-sky-100 text-sky-800 border border-sky-200 font-medium px-2 py-0.5 rounded-full text-[10px]">OPEN</span>;
+        return (
+          <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+            OPEN
+          </span>
+        );
       case "RESOLVED":
-        return <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-medium px-2 py-0.5 rounded-full text-[10px]">RESOLVED</span>;
+        return (
+          <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            RESOLVED
+          </span>
+        );
       default:
-        return <span className="bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-full text-[10px]">{s}</span>;
+        return (
+          <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+            {s}
+          </span>
+        );
     }
   };
 
-  const getTierBadge = (tier?: string) => {
-    if (!tier) return null;
-    const styles: Record<string, string> = {
-      PLATINUM: "bg-purple-50 text-purple-700 border-purple-300 font-bold",
-      GOLD: "bg-amber-50 text-amber-800 border-amber-300 font-bold",
-      SILVER: "bg-slate-100 text-slate-700 border-slate-300 font-medium",
-    };
-    return (
-      <span className={`text-[9px] font-mono uppercase px-1 py-0.2 rounded border ${styles[tier] || "bg-slate-50 text-slate-500"}`}>
-        {tier}
-      </span>
-    );
-  };
-
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-white border-r border-slate-200">
-      {/* Search & Stats Bar */}
-      <div className="p-3 border-b border-slate-200 flex items-center justify-between gap-3 bg-slate-50/50">
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+    <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 border-r border-slate-200/90 dark:border-slate-800 h-full transition-colors">
+      {/* Search & Layout View Bar */}
+      <div className="p-3 border-b border-slate-200/90 dark:border-slate-800 flex items-center justify-between gap-2.5 bg-slate-50/60 dark:bg-slate-900/90">
+        <div className="relative flex-1">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
-            placeholder="Search by ticket #, TBOH booking hash, subject, or requester..."
+            placeholder="Search tickets, TBOH, subject, partner..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-sky-500 font-medium"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 text-slate-800 dark:text-slate-100 transition-colors"
           />
         </div>
-        <div className="text-xs text-slate-500 font-mono">
-          Showing <span className="font-bold text-slate-900">{tickets.length}</span> tickets
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono hidden xl:inline">
+            {tickets.length} incidents
+          </span>
+          <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md p-0.5">
+            <button
+              onClick={() => setViewMode("feed")}
+              className={`p-1 rounded transition-colors ${
+                viewMode === "feed"
+                  ? "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                  : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              }`}
+              title="Feed View"
+            >
+              <LayoutList className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setViewMode("table")}
+              className={`p-1 rounded transition-colors ${
+                viewMode === "table"
+                  ? "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                  : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              }`}
+              title="Table View"
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Dense Table View */}
+      {/* Main Queue Content */}
       <div className="flex-1 overflow-y-auto">
         {loading ? (
-          <div className="p-2">
+          <div className="p-3">
             <TableSkeleton rows={7} />
           </div>
         ) : tickets.length === 0 ? (
@@ -133,111 +168,128 @@ export const TicketQueueTable: React.FC<TicketQueueTableProps> = ({
               else if (onResetFilters) onResetFilters();
             }}
           />
-        ) : (
-          <table className="w-full text-left border-collapse text-xs">
-            <thead className="sticky top-0 bg-slate-100/90 backdrop-blur-xs border-b border-slate-200 z-10 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-              <tr>
-                <th className="py-2.5 px-3">Ticket / TBOH</th>
-                <th className="py-2.5 px-3">Agency Partner</th>
-                <th className="py-2.5 px-3">Operational Subject</th>
-                <th className="py-2.5 px-3">Check-In Urgency</th>
-                <th className="py-2.5 px-3">Assigned Agent</th>
-                <th className="py-2.5 px-3">Dynamic SLA</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {tickets.map((t) => {
-                const isSelected = selectedTicketId === t.id;
-                return (
-                  <tr
-                    key={t.id}
-                    onClick={() => onSelectTicket(t.id)}
-                    className={`cursor-pointer transition-colors ${
-                      isSelected
-                        ? "bg-sky-50/90 font-medium text-slate-900 border-l-4 border-l-sky-600"
-                        : "hover:bg-slate-50 text-slate-800"
-                    }`}
-                  >
-                    {/* Ticket & TBOH */}
-                    <td className="py-2 px-3 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="font-mono font-bold text-sky-700">{t.ticket_number}</span>
-                        {getPriorityBadge(t.priority)}
-                      </div>
-                      <div className="flex items-center gap-1 text-[11px] text-slate-500 font-mono">
-                        <span className="font-semibold text-slate-700">{t.tboh_hash}</span>
+        ) : viewMode === "feed" ? (
+          /* High-Density Incident Feed (Clean, Spacious, Uncluttered) */
+          <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
+            {tickets.map((t) => {
+              const isSelected = selectedTicketId === t.id;
+              return (
+                <div
+                  key={t.id}
+                  onClick={() => onSelectTicket(t.id)}
+                  className={`p-3.5 cursor-pointer transition-all border-l-2 ${
+                    isSelected
+                      ? "bg-blue-50/40 dark:bg-blue-950/30 border-l-blue-600 shadow-2xs"
+                      : "border-l-transparent hover:bg-slate-50/80 dark:hover:bg-slate-800/50 text-slate-800 dark:text-slate-200"
+                  }`}
+                >
+                  {/* Top Line: Ticket ID, TBOH, and SLA Badge */}
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex items-center gap-2">
+                      {getPriorityDot(t.priority)}
+                      <span className="font-mono font-bold text-xs text-slate-900 dark:text-slate-100">
+                        {t.ticket_number}
+                      </span>
+                      <span className="text-slate-300 dark:text-slate-700">•</span>
+                      <div className="flex items-center gap-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+                        <span>{t.tboh_hash}</span>
                         <button
                           onClick={(e) => handleCopyHash(e, t.tboh_hash)}
-                          className="text-slate-400 hover:text-slate-700"
+                          className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-0.5 rounded"
                           title="Copy Booking Hash"
                         >
                           {copiedHash === t.tboh_hash ? (
-                            <Check className="w-3 h-3 text-emerald-600" />
+                            <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                           ) : (
                             <Copy className="w-3 h-3" />
                           )}
                         </button>
                       </div>
-                    </td>
+                    </div>
 
-                    {/* Agency */}
-                    <td className="py-2 px-3">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="font-semibold text-slate-900 truncate max-w-[130px] block" title={t.agency_name}>
-                          {t.agency_name || "Agency"}
+                    <SlaBadge deadline={t.sla_deadline} status={t.sla_status} compact />
+                  </div>
+
+                  {/* Middle Line: Subject */}
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 mb-2 leading-snug">
+                    {t.subject}
+                  </p>
+
+                  {/* Bottom Line: Metadata Chips */}
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="font-medium text-slate-700 dark:text-slate-300 truncate max-w-[140px]">
+                        {t.agency_name || "Agency"}
+                      </span>
+                      <span className="text-slate-300 dark:text-slate-700">•</span>
+                      <span className="text-slate-400 dark:text-slate-500 font-mono text-[10px]">{t.region}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {getStatusBadge(t.status)}
+                      <div className="flex items-center gap-1 text-[11px] text-slate-600 dark:text-slate-300 font-medium">
+                        <User className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                        <span className="truncate max-w-[90px]">
+                          {t.assigned_agent_name ? t.assigned_agent_name.split(" ")[0] : "Unassigned"}
                         </span>
-                        {getTierBadge(t.agency_tier)}
                       </div>
-                      <span className="text-[10px] text-slate-400 font-mono">{t.region}</span>
-                    </td>
-
-                    {/* Subject & Category */}
-                    <td className="py-2 px-3 max-w-xs">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        {getStatusBadge(t.status)}
-                        <span className="text-[10px] font-mono text-slate-500 uppercase px-1 py-0.2 bg-slate-100 rounded">
-                          {t.category}
-                        </span>
-                      </div>
-                      <p className="truncate text-slate-800 font-medium text-xs" title={t.subject}>
-                        {t.subject}
-                      </p>
-                    </td>
-
-                    {/* Check-In Urgency */}
-                    <td className="py-2 px-3 whitespace-nowrap">
-                      <div className="flex items-center gap-1 text-slate-700 font-mono text-[11px]">
-                        <Clock className="w-3 h-3 text-slate-400" />
-                        <span>{formatDate(t.check_in_date)}</span>
-                      </div>
-                      {t.last_cancellation_date && (
-                        <div className="text-[10px] text-slate-400 font-mono">
-                          LCD: {formatDate(t.last_cancellation_date)}
-                        </div>
-                      )}
-                    </td>
-
-                    {/* Agent & Routing Score */}
-                    <td className="py-2 px-3 whitespace-nowrap">
-                      <div className="flex items-center gap-1 font-medium text-slate-800">
-                        <User className="w-3 h-3 text-slate-400" />
-                        <span className="truncate max-w-[100px]">{t.assigned_agent_name || "Unassigned"}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[10px] text-slate-500 font-mono">
-                        <Sparkles className="w-2.5 h-2.5 text-amber-500" />
-                        <span>Score: {t.routing_score.toFixed(0)}</span>
-                      </div>
-                    </td>
-
-                    {/* SLA Badge */}
-                    <td className="py-2 px-3 whitespace-nowrap">
-                      <SlaBadge deadline={t.sla_deadline} status={t.sla_status} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* Table View */
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-10 text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <tr>
+                  <th className="py-2.5 px-3">Ticket</th>
+                  <th className="py-2.5 px-3">Partner</th>
+                  <th className="py-2.5 px-3">Subject</th>
+                  <th className="py-2.5 px-3">Check-In</th>
+                  <th className="py-2.5 px-3">Agent</th>
+                  <th className="py-2.5 px-3">SLA</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {tickets.map((t) => {
+                  const isSelected = selectedTicketId === t.id;
+                  return (
+                    <tr
+                      key={t.id}
+                      onClick={() => onSelectTicket(t.id)}
+                      className={`cursor-pointer transition-colors ${
+                        isSelected
+                          ? "bg-blue-50/60 dark:bg-blue-950/40 font-medium text-slate-900 dark:text-slate-100 border-l-2 border-l-blue-600"
+                          : "hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-800 dark:text-slate-200"
+                      }`}
+                    >
+                      <td className="py-2.5 px-3 whitespace-nowrap">
+                        <div className="font-mono font-bold text-slate-900 dark:text-slate-100">{t.ticket_number}</div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{t.tboh_hash}</div>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <div className="font-medium text-slate-800 dark:text-slate-200 truncate max-w-[110px]">{t.agency_name}</div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{t.region}</div>
+                      </td>
+                      <td className="py-2.5 px-3 max-w-xs truncate">{t.subject}</td>
+                      <td className="py-2.5 px-3 whitespace-nowrap text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                        {formatDate(t.check_in_date)}
+                      </td>
+                      <td className="py-2.5 px-3 whitespace-nowrap text-slate-600 dark:text-slate-300 font-medium">
+                        {t.assigned_agent_name || "Unassigned"}
+                      </td>
+                      <td className="py-2.5 px-3 whitespace-nowrap">
+                        <SlaBadge deadline={t.sla_deadline} status={t.sla_status} compact />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

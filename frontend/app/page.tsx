@@ -47,6 +47,7 @@ export default function WorkspacePage() {
   const [showEscalateModal, setShowEscalateModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [showSideConvoModal, setShowSideConvoModal] = useState(false);
+  const [showContextPane, setShowContextPane] = useState(true);
 
   // Stats
   const [stats, setStats] = useState({ active: 0, atRisk: 0, escalated: 0 });
@@ -251,7 +252,7 @@ export default function WorkspacePage() {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-100">
+    <div className="flex flex-col h-screen overflow-hidden bg-slate-100 dark:bg-slate-950 transition-colors">
       {/* Top Header */}
       <Header
         currentUser={currentUser}
@@ -268,10 +269,8 @@ export default function WorkspacePage() {
 
       {/* Floating Real-Time Event Toast Notification */}
       {liveNotification && (
-        <div className="fixed top-14 right-6 z-50 bg-slate-900 text-white border border-slate-700 shadow-xl rounded-xl px-4 py-2.5 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-200">
-          <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold shrink-0 animate-ping">
-            ⚡
-          </div>
+        <div className="fixed top-14 right-6 z-50 bg-slate-900 dark:bg-slate-800 text-white border border-slate-700 shadow-xl rounded-xl px-4 py-2.5 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="w-2 h-2 rounded-full bg-amber-400"></div>
           <p className="text-xs font-medium max-w-sm truncate">{liveNotification}</p>
           <button
             onClick={() => setLiveNotification(null)}
@@ -302,7 +301,7 @@ export default function WorkspacePage() {
         />
 
         {/* Center Triage Queue Table */}
-        <div className="w-[480px] xl:w-[540px] flex flex-col shrink-0">
+        <div className="w-[360px] lg:w-[400px] flex flex-col shrink-0">
           <ErrorBoundary fallbackTitle="Error loading operational triage queue">
             <TicketQueueTable
               tickets={tickets}
@@ -323,34 +322,59 @@ export default function WorkspacePage() {
         </div>
 
         {/* Right Split Workspace: Ticket Detail View + Auxiliary Context Engine */}
-        <div className="flex-1 flex min-w-0 bg-white">
+        <div className="flex-1 flex min-w-0 bg-white dark:bg-slate-900 transition-colors">
           {loadingDetail && !activeTicket ? (
             <DetailSkeleton />
           ) : activeTicket ? (
             <>
               {/* Central Detail / Messages */}
-              <ErrorBoundary fallbackTitle="Error rendering ticket operational view">
-                <TicketDetailView
-                  ticket={activeTicket}
-                  currentUser={currentUser}
-                  onRefresh={() => handleRefreshActive(false)}
-                  onOpenEscalate={() => setShowEscalateModal(true)}
-                  onOpenTransfer={() => setShowTransferModal(true)}
-                  onOpenSideConvo={() => setShowSideConvoModal(true)}
-                />
-              </ErrorBoundary>
-
-              {/* Auxiliary Context Linkage Right Pane */}
-              <div className="w-80 lg:w-96 border-l border-slate-200 bg-slate-50/70 p-3.5 overflow-y-auto shrink-0">
-                <ErrorBoundary fallbackTitle="Context linkage engine error">
-                  <ContextLinkagePane
-                    currentTicket={activeTicket}
-                    contextLinks={contextLinks}
-                    loading={loadingLinks}
-                    onSelectTicket={setSelectedTicketId}
+              <div className="flex-1 flex flex-col min-w-0">
+                <ErrorBoundary fallbackTitle="Error rendering ticket operational view">
+                  <TicketDetailView
+                    ticket={activeTicket}
+                    currentUser={currentUser}
+                    onRefresh={() => handleRefreshActive(false)}
+                    onOpenEscalate={() => setShowEscalateModal(true)}
+                    onOpenTransfer={() => setShowTransferModal(true)}
+                    onOpenSideConvo={() => setShowSideConvoModal(true)}
                   />
                 </ErrorBoundary>
               </div>
+
+              {/* Auxiliary Context Linkage Right Pane */}
+              {showContextPane && (
+                <div className="w-72 xl:w-80 border-l border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-3.5 overflow-y-auto shrink-0 transition-colors">
+                  <div className="flex items-center justify-between pb-1">
+                    <button
+                      onClick={() => setShowContextPane(false)}
+                      className="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 ml-auto"
+                      title="Hide Context Panel"
+                    >
+                      Hide ✕
+                    </button>
+                  </div>
+                  <ErrorBoundary fallbackTitle="Context linkage engine error">
+                    <ContextLinkagePane
+                      currentTicket={activeTicket}
+                      contextLinks={contextLinks}
+                      loading={loadingLinks}
+                      onSelectTicket={setSelectedTicketId}
+                    />
+                  </ErrorBoundary>
+                </div>
+              )}
+
+              {!showContextPane && (
+                <button
+                  onClick={() => setShowContextPane(true)}
+                  className="w-7 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border-l border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-mono write-vertical"
+                  title="Show Context Linkage Panel"
+                >
+                  <span className="rotate-90 whitespace-nowrap text-[11px] font-semibold tracking-wider uppercase">
+                    Context
+                  </span>
+                </button>
+              )}
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-slate-400 text-xs">
