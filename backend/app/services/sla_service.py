@@ -13,6 +13,13 @@ def calculate_travel_aware_sla(
     Prioritizes check-in proximity and LCD over standard static hourly SLAs.
     """
     now = datetime.utcnow()
+    # Normalize all datetimes to naive UTC for safe arithmetic
+    if created_at and created_at.tzinfo:
+        created_at = created_at.replace(tzinfo=None)
+    if check_in_date and check_in_date.tzinfo:
+        check_in_date = check_in_date.replace(tzinfo=None)
+    if last_cancellation_date and last_cancellation_date.tzinfo:
+        last_cancellation_date = last_cancellation_date.replace(tzinfo=None)
 
     # 1. Base SLA by priority
     priority_hours = {

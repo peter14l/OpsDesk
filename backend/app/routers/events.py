@@ -132,9 +132,18 @@ async def simulate_inbound_ticket(
     checkin = now + timedelta(hours=hours_ahead)
     lcd = checkin - timedelta(hours=12)
 
-    count = db.query(Ticket).count() + 1001
-    ticket_num = f"TBO-2026-{count}"
-    tboh = f"TBOH-LIVE-{count}"
+    # Generate sequential unique ticket number safely without collisions
+    existing_tickets = db.query(Ticket.ticket_number).filter(Ticket.ticket_number.like("TBO-2026-%")).all()
+    max_num = 1000
+    for (t_num,) in existing_tickets:
+        try:
+            num = int(t_num.split("-")[-1])
+            if num > max_num:
+                max_num = num
+        except (ValueError, IndexError):
+            continue
+    ticket_num = f"TBO-2026-{max_num + 1}"
+    tboh = f"TBOH-LIVE-{max_num + 1}"
 
     deadline, sla_status = calculate_travel_aware_sla(now, checkin, lcd, "URGENT" if urgency == "critical" else "MEDIUM")
 

@@ -34,7 +34,8 @@ def evaluate_ticket_routing(
         return None, 0.0, "No active agents available in the pool. Routed to Operations Queue."
 
     now = datetime.utcnow()
-    hours_to_checkin = (ticket.check_in_date - now).total_seconds() / 3600.0 if ticket.check_in_date else 999.0
+    cid = ticket.check_in_date.replace(tzinfo=None) if (ticket.check_in_date and ticket.check_in_date.tzinfo) else ticket.check_in_date
+    hours_to_checkin = (cid - now).total_seconds() / 3600.0 if cid else 999.0
 
     # Calculate Urgency Score (0 - 1.0)
     if hours_to_checkin <= 6:

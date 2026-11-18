@@ -139,17 +139,27 @@ async def create_ticket(payload: TicketCreate, db: Session = Depends(get_db)):
     if not agency:
         raise HTTPException(status_code=404, detail="Agency not found")
 
-    # Generate sequential/unique ticket number
-    count = db.query(Ticket).count() + 1000
-    ticket_number = f"TBO-2026-{count}"
+    # Generate sequential unique ticket number safely without collisions
+    existing_tickets = db.query(Ticket.ticket_number).filter(Ticket.ticket_number.like("TBO-2026-%")).all()
+    max_num = 1000
+    for (t_num,) in existing_tickets:
+        try:
+            num = int(t_num.split("-")[-1])
+            if num > max_num:
+                max_num = num
+        except (ValueError, IndexError):
+            continue
+    ticket_number = f"TBO-2026-{max_num + 1}"
 
     now = datetime.utcnow()
+    check_in = payload.check_in_date.replace(tzinfo=None) if payload.check_in_date.tzinfo else payload.check_in_date
+    lcd = payload.last_cancellation_date.replace(tzinfo=None) if (payload.last_cancellation_date and payload.last_cancellation_date.tzinfo) else payload.last_cancellation_date
 
     # Dynamic SLA calculation
     effective_deadline, sla_status = calculate_travel_aware_sla(
         created_at=now,
-        check_in_date=payload.check_in_date,
-        last_cancellation_date=payload.last_cancellation_date,
+        check_in_date=check_in,
+        last_cancellation_date=lcd,
         priority=payload.priority or "MEDIUM",
     )
 
@@ -163,8 +173,8 @@ async def create_ticket(payload: TicketCreate, db: Session = Depends(get_db)):
         category=payload.category.strip().upper(),
         priority=(payload.priority or "MEDIUM").upper(),
         status="NEW",
-        check_in_date=payload.check_in_date,
-        last_cancellation_date=payload.last_cancellation_date,
+        check_in_date=check_in,
+        last_cancellation_date=lcd,
         region=payload.region or agency.region,
         sla_deadline=effective_deadline,
         sla_status=sla_status,
